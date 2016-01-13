@@ -28,4 +28,64 @@ var exec = require('cordova/exec');
 function Ftp() {
 }
 
+Ftp.prototype.init = function(hostname, username, password, successCallback, errorCallback) {
+    exec(successCallback,
+         errorCallback,
+         "Ftp",
+         "setupManager",
+         [hostname, username, password]);
+};
+
+Ftp.prototype.ls = function(path, successCallback, errorCallback) {
+    exec(function(ok) {
+            if (ok instanceof Array) {
+                successCallback(ok);
+            }
+         },
+         errorCallback,
+         "Ftp",
+         "list",
+         [path]);
+};
+
+Ftp.prototype.mkdir = function(path, successCallback, errorCallback) {
+    exec(successCallback,
+         errorCallback,
+         "Ftp",
+         "createDirectory",
+         [path]);
+};
+
+Ftp.prototype.rmdir = function(path, successCallback, errorCallback) {
+    exec(successCallback,
+         errorCallback,
+         "Ftp",
+         "deleteDirectory",
+         [path]);
+};
+
+Ftp.prototype.rm = function(file, successCallback, errorCallback) {
+    exec(successCallback,
+         errorCallback,
+         "Ftp",
+         "deleteFile",
+         [file]);
+};
+
+Ftp.prototype.upload = function(localFile, remoteFile, successCallback, errorCallback) {
+    exec(successCallback,
+         errorCallback,
+         "Ftp",
+         "uploadFile",
+         [localFile, remoteFile]);
+};
+
+Ftp.prototype.download = function(localFile, remoteFile, successCallback, errorCallback) {
+    exec(successCallback,
+         errorCallback,
+         "Ftp",
+         "downloadFile",
+         [localFile, remoteFile]);
+};
+
 module.exports = new Ftp();

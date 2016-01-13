@@ -17,8 +17,16 @@
  under the License.
  */
 
-#import <Cordova/CDVPlugin.h>
+#import <Cordova/CDV.h>
 
 @interface CDVFtp : CDVPlugin
-{}
+
+- (void)setupManager:(CDVInvokedUrlCommand*)cmd;
+- (void)list:(CDVInvokedUrlCommand*)cmd;
+- (void)createDirectory:(CDVInvokedUrlCommand*)cmd;
+- (void)deleteDirectory:(CDVInvokedUrlCommand*)cmd;
+- (void)deleteFile:(CDVInvokedUrlCommand*)cmd;
+- (void)uploadFile:(CDVInvokedUrlCommand*)cmd;
+- (void)downloadFile:(CDVInvokedUrlCommand*)cmd;
+
 @end
