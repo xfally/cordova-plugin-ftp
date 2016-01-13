@@ -43,6 +43,30 @@
 
         <header-file src="src/ios/CDVFtp.h" />
         <source-file src="src/ios/CDVFtp.m" />
+
+        <header-file src="src/ios/GoldRaccoon/Sources/GRRequestsManager.h" />
+        <source-file src="src/ios/GoldRaccoon/Sources/GRRequestsManager.m" />
+        <header-file src="src/ios/GoldRaccoon/Sources/GRRequestsManagerProtocol.h" />
+        <header-file src="src/ios/GoldRaccoon/Sources/Requests/GRCreateDirectoryRequest.h" />
+        <source-file src="src/ios/GoldRaccoon/Sources/Requests/GRCreateDirectoryRequest.m" />
+        <header-file src="src/ios/GoldRaccoon/Sources/Requests/GRDeleteRequest.h" />
+        <source-file src="src/ios/GoldRaccoon/Sources/Requests/GRDeleteRequest.m" />
+        <header-file src="src/ios/GoldRaccoon/Sources/Requests/GRDownloadRequest.h" />
+        <source-file src="src/ios/GoldRaccoon/Sources/Requests/GRDownloadRequest.m" />
+        <header-file src="src/ios/GoldRaccoon/Sources/Requests/GRListingRequest.h" />
+        <source-file src="src/ios/GoldRaccoon/Sources/Requests/GRListingRequest.m" />
+        <header-file src="src/ios/GoldRaccoon/Sources/Requests/GRRequest.h" />
+        <source-file src="src/ios/GoldRaccoon/Sources/Requests/GRRequest.m" />
+        <header-file src="src/ios/GoldRaccoon/Sources/Requests/GRRequestProtocol.h" />
+        <header-file src="src/ios/GoldRaccoon/Sources/Requests/GRUploadRequest.h" />
+        <source-file src="src/ios/GoldRaccoon/Sources/Requests/GRUploadRequest.m" />
+        <header-file src="src/ios/GoldRaccoon/Sources/Utils/GRError.h" />
+        <source-file src="src/ios/GoldRaccoon/Sources/Utils/GRError.m" />
+        <header-file src="src/ios/GoldRaccoon/Sources/Utils/GRQueue.h" />
+        <source-file src="src/ios/GoldRaccoon/Sources/Utils/GRQueue.m" />
+        <header-file src="src/ios/GoldRaccoon/Sources/Utils/GRStreamInfo.h" />
+        <source-file src="src/ios/GoldRaccoon/Sources/Utils/GRStreamInfo.m" />
+
     </platform>
 
 </plugin>
