@@ -18,6 +18,7 @@
  */
 
 #import "GRRequestsManager.h"
+#import "GRListingRequest.h"
 #import "CDVFtp.h"
 
 @interface CDVFtp () <GRRequestsManagerDelegate>
@@ -204,8 +205,21 @@
 
 - (void)requestsManager:(id<GRRequestsManagerProtocol>)requestsManager didCompleteListingRequest:(id<GRRequestProtocol>)request listing:(NSArray *)listing
 {
+    NSMutableArray* newFilesInfo = [[NSMutableArray alloc] init];
+    for (NSDictionary* file in ((GRListingRequest *)request).filesInfo) {
+        NSString* name = [file objectForKey:(id)kCFFTPResourceName];
+        NSData* nameData = [name dataUsingEncoding:NSMacOSRomanStringEncoding];
+        name = [[NSString alloc] initWithData:nameData encoding:NSUTF8StringEncoding];
+        NSMutableDictionary* newFile = [NSMutableDictionary dictionaryWithDictionary:file];
+        [newFile setObject:name forKey:(id)kCFFTPResourceName];
+        // FIXME: Convert to json will fail as Date format, so just remove it.
+        [newFile removeObjectForKey:(id)kCFFTPResourceModDate];
+        [newFilesInfo addObject:newFile];
+    }
     NSLog(@"requestsManager:didCompleteListingRequest:listing: \n%@", listing);
-    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:listing];
+    NSLog(@"requestsManager:didCompleteListingRequest:newFilesInfo: \n%@", newFilesInfo);
+    // Return all files info, not just name list.
+    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:newFilesInfo];
     [self.pluginResult setKeepCallbackAsBool:NO];
     [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
 }
