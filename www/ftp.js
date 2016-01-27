@@ -36,8 +36,8 @@ function Ftp() {
  * @param {string} hostname The ftp server url. Like ip without protocol prefix, e.g. "192.168.1.1".
  * @param {string} username The ftp login username. If it and `password` are all blank/undefined, the default username "anonymous" is used.
  * @param {string} password The ftp login password. If it and `username` are all blank/undefined, the default password "anonymous@" is used.
- * @param {function} successCallback The success callback, invoked with arg `null` always.
- *                                   If triggered, means `init` success, but NOT means the later action, e.g. `ls`... `download` will success!
+ * @param {function} successCallback The success callback.
+ *                                   Notice: For iOS, if triggered, means `init` success, but NOT means the later action, e.g. `ls`... `download` will success!
  * @param {function} errorCallback The error callback. If triggered, means init fail.
  */
 Ftp.prototype.init = function(hostname, username, password, successCallback, errorCallback) {
@@ -146,6 +146,20 @@ Ftp.prototype.download = function(localFile, remoteFile, successCallback, errorC
          "Ftp",
          "downloadFile",
          [localFile, remoteFile]);
+};
+
+/**
+ * Cancel all requests. Always success.
+ *
+ * @param {function} successCallback The success callback. If triggered, means `cancel` success.
+ * @param {function} errorCallback The error callback. If triggered, means cancel fail.
+ */
+Ftp.prototype.cancel = function(successCallback, errorCallback) {
+    exec(successCallback,
+         errorCallback,
+         "Ftp",
+         "cancelAllRequests",
+         []);
 };
 
 module.exports = new Ftp();

@@ -193,6 +193,17 @@
     }
 }
 
+- (void)cancelAllRequests:(CDVInvokedUrlCommand*)cmd
+{
+    self.cmd = cmd;
+
+	[self.requestsManager stopAndCancelAllRequests];
+
+    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.pluginResult setKeepCallbackAsBool:NO];
+    [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
+}
+
 #pragma mark - GRRequestsManagerDelegate
 
 - (void)requestsManager:(id<GRRequestsManagerProtocol>)requestsManager didScheduleRequest:(id<GRRequestProtocol>)request
