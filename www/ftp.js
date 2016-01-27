@@ -29,7 +29,7 @@ function Ftp() {
 }
 
 /**
- * Init one ftp connection.
+ * Connect to one ftp server.
  *
  * Just need to init the connection once. If success, you can do any ftp actions later.
  *
@@ -40,11 +40,11 @@ function Ftp() {
  *                                   Notice: For iOS, if triggered, means `init` success, but NOT means the later action, e.g. `ls`... `download` will success!
  * @param {function} errorCallback The error callback. If triggered, means init fail.
  */
-Ftp.prototype.init = function(hostname, username, password, successCallback, errorCallback) {
+Ftp.prototype.connect = function(hostname, username, password, successCallback, errorCallback) {
     exec(successCallback,
          errorCallback,
          "Ftp",
-         "setupManager",
+         "connect",
          [hostname, username, password]);
 };
 
@@ -84,6 +84,8 @@ Ftp.prototype.mkdir = function(path, successCallback, errorCallback) {
 
 /**
  * Delete one directory on the ftp server.
+ *
+ * Tip: As many ftp server could not rm dir when it's not empty, so rm all files under the dir at first is recommended.
  *
  * @param {string} path The directory you want to delete. e.g. "/adf/123/newDir/".
  * @param {function} successCallback The success callback. If triggered, means success.

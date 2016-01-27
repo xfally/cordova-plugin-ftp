@@ -19,7 +19,7 @@ It has not added to npm registry yet.
 
 ```js
 if (window.ftp) {
-	window.ftp.init("192.168.1.1", "anonymous", "anonymous@", function() {
+	window.ftp.connect("192.168.1.1", "anonymous", "anonymous@", function() {
 		window.ftp.ls("/one/ftp/path/", function(fileList) {
 			if (fileList && fileList.length > 0) {
 				console.log("The last file'name is " + fileList[fileList.length - 1].kCFFTPResourceName);

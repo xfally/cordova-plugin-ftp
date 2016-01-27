@@ -36,7 +36,7 @@
 
 @implementation CDVFtp
 
-- (void)setupManager:(CDVInvokedUrlCommand*)cmd
+- (void)connect:(CDVInvokedUrlCommand*)cmd
 {
     self.cmd = cmd;
     self.hostname = [cmd.arguments objectAtIndex:0];

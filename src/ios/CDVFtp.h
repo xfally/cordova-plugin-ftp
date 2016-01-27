@@ -21,7 +21,7 @@
 
 @interface CDVFtp : CDVPlugin
 
-- (void)setupManager:(CDVInvokedUrlCommand*)cmd;
+- (void)connect:(CDVInvokedUrlCommand*)cmd;
 - (void)list:(CDVInvokedUrlCommand*)cmd;
 - (void)createDirectory:(CDVInvokedUrlCommand*)cmd;
 - (void)deleteDirectory:(CDVInvokedUrlCommand*)cmd;
