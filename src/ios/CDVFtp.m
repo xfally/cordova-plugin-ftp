@@ -214,17 +214,48 @@
     [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
 }
 
+/*
+ * Refer to [Apple CF doc](https://developer.apple.com/library/mac/documentation/CoreFoundation/Reference/CFFTPStreamRef/index.html#//apple_ref/doc/uid/TP40003359-CH3-205971)
+ *  for all available file fields, e.g. `kCFFTPResourceName`, `kCFFTPResourceType`...
+ *  But notice that `kCFFTPResourceModDate` must be **excluded** currently as one json convert bug.
+ * Refer to [Apple dirent doc](https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man5/dirent.5.html)
+ *  for all available file type `kCFFTPResourceType`.
+ * Here, we rename some field's key and value for platform compatibility.
+ */
 - (void)requestsManager:(id<GRRequestsManagerProtocol>)requestsManager didCompleteListingRequest:(id<GRRequestProtocol>)request listing:(NSArray *)listing
 {
     NSMutableArray* newFilesInfo = [[NSMutableArray alloc] init];
     for (NSDictionary* file in ((GRListingRequest *)request).filesInfo) {
+        NSMutableDictionary* newFile = [[NSMutableDictionary alloc] init];
+		// file name
         NSString* name = [file objectForKey:(id)kCFFTPResourceName];
         NSData* nameData = [name dataUsingEncoding:NSMacOSRomanStringEncoding];
         name = [[NSString alloc] initWithData:nameData encoding:NSUTF8StringEncoding];
-        NSMutableDictionary* newFile = [NSMutableDictionary dictionaryWithDictionary:file];
-        [newFile setObject:name forKey:(id)kCFFTPResourceName];
-        // FIXME: Convert to json will fail as Date format, so just remove it.
-        [newFile removeObjectForKey:(id)kCFFTPResourceModDate];
+        [newFile setObject:name forKey:@"name"];
+		// file type
+        NSNumber* type = [file objectForKey:(id)kCFFTPResourceType];
+		if ([type intValue] == 8) {
+			// regular file
+			[newFile setObject:[NSNumber numberWithInt:0] forKey:@"type"];
+		} else if ([type intValue] == 4) {
+			// directory
+			[newFile setObject:[NSNumber numberWithInt:1] forKey:@"type"];
+		} else if ([type intValue] == 10) {
+			// symbolic link
+			[newFile setObject:[NSNumber numberWithInt:2] forKey:@"type"];
+		} else {
+			// other files, like char dev, block dev, fifo dev, socket dev... are all treated as unknown type
+			[newFile setObject:[NSNumber numberWithInt:-1] forKey:@"type"];
+		}
+		// symbolic link information (if the file is a symbolic link)
+        NSString* link = [file objectForKey:(id)kCFFTPResourceLink];
+        NSData* linkData = [link dataUsingEncoding:NSMacOSRomanStringEncoding];
+        link = [[NSString alloc] initWithData:linkData encoding:NSUTF8StringEncoding];
+        [newFile setObject:link forKey:@"link"];
+		// file size
+        NSNumber* size = [file objectForKey:(id)kCFFTPResourceSize];
+        [newFile setObject:size forKey:@"size"];
+        // FIXME: Convert to json will fail as Date format, so don't add it.
         [newFilesInfo addObject:newFile];
     }
     NSLog(@"requestsManager:didCompleteListingRequest:listing: \n%@", listing);

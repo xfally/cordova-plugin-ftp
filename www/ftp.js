@@ -49,7 +49,15 @@ Ftp.prototype.connect = function(hostname, username, password, successCallback, 
 };
 
 /**
- * List files under one directory on the ftp server.
+ * List files (with info of `name`, `type`, `link`, `size`) under one directory on the ftp server.
+ *
+ * You can get one file's name using `fileList[x].name` (`x` is the location in array).
+ *
+ * Explain key:
+ * - name: file name (utf-8).
+ * - type: file type. number `0` means regular file, `1` means directory, `2` means symbolic link, `-1` means unknown type (maybe block dev, char dev...).
+ * - link: if the file is a symbolic link, then this field store symbolic link information (utf-8), else it's a blank string.
+ * - size: file size in bytes.
  *
  * @param {string} path The path on the ftp server. e.g. "/adf/123/".
  * @param {function} successCallback The success callback, invoked with arg `{array} fileList`.
