@@ -61,7 +61,7 @@
                                                                   password:self.password];
         self.requestsManager.delegate = self;
 
-        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Init connect and login ok. (iOS always success)"];
     }
 
     [self.pluginResult setKeepCallbackAsBool:NO];
@@ -75,7 +75,7 @@
 
     if (path == nil)
     {
-        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Expected path."];
         [self.commandDelegate sendPluginResult:self.pluginResult callbackId:cmd.callbackId];
     }
     else
@@ -98,7 +98,7 @@
 
     if (path == nil)
     {
-        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Expected path."];
         [self.commandDelegate sendPluginResult:self.pluginResult callbackId:cmd.callbackId];
     }
     else
@@ -121,7 +121,7 @@
 
     if (path == nil)
     {
-        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Expected path."];
         [self.commandDelegate sendPluginResult:self.pluginResult callbackId:cmd.callbackId];
     }
     else
@@ -144,7 +144,7 @@
 
     if (path == nil)
     {
-        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Expected file."];
         [self.commandDelegate sendPluginResult:self.pluginResult callbackId:cmd.callbackId];
     }
     else
@@ -163,7 +163,7 @@
 
     if ([localPath length] == 0 || [remotePath length] == 0)
     {
-        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Expected localFile and remoteFile."];
         [self.commandDelegate sendPluginResult:self.pluginResult callbackId:cmd.callbackId];
     }
     else
@@ -182,7 +182,7 @@
 
     if ([localPath length] == 0 || [remotePath length] == 0)
     {
-        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Expected localFile and remoteFile."];
         [self.commandDelegate sendPluginResult:self.pluginResult callbackId:cmd.callbackId];
     }
     else
@@ -197,9 +197,9 @@
 {
     self.cmd = cmd;
 
-	[self.requestsManager stopAndCancelAllRequests];
+    [self.requestsManager stopAndCancelAllRequests];
 
-    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Cancel request OK"];
     [self.pluginResult setKeepCallbackAsBool:NO];
     [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
 }
@@ -227,38 +227,38 @@
     NSMutableArray* newFilesInfo = [[NSMutableArray alloc] init];
     for (NSDictionary* file in ((GRListingRequest *)request).filesInfo) {
         NSMutableDictionary* newFile = [[NSMutableDictionary alloc] init];
-		// file name
+        // file name
         NSString* name = [file objectForKey:(id)kCFFTPResourceName];
         NSData* nameData = [name dataUsingEncoding:NSMacOSRomanStringEncoding];
         name = [[NSString alloc] initWithData:nameData encoding:NSUTF8StringEncoding];
         [newFile setObject:name forKey:@"name"];
-		// file type
+        // file type
         NSNumber* type = [file objectForKey:(id)kCFFTPResourceType];
-		if ([type intValue] == 8) {
-			// regular file
-			[newFile setObject:[NSNumber numberWithInt:0] forKey:@"type"];
-		} else if ([type intValue] == 4) {
-			// directory
-			[newFile setObject:[NSNumber numberWithInt:1] forKey:@"type"];
-		} else if ([type intValue] == 10) {
-			// symbolic link
-			[newFile setObject:[NSNumber numberWithInt:2] forKey:@"type"];
-		} else {
-			// other files, like char dev, block dev, fifo dev, socket dev... are all treated as unknown type
-			[newFile setObject:[NSNumber numberWithInt:-1] forKey:@"type"];
-		}
-		// symbolic link information (if the file is a symbolic link)
+        if ([type intValue] == 8) {
+            // regular file
+            [newFile setObject:[NSNumber numberWithInt:0] forKey:@"type"];
+        } else if ([type intValue] == 4) {
+            // directory
+            [newFile setObject:[NSNumber numberWithInt:1] forKey:@"type"];
+        } else if ([type intValue] == 10) {
+            // symbolic link
+            [newFile setObject:[NSNumber numberWithInt:2] forKey:@"type"];
+        } else {
+            // other files, like char dev, block dev, fifo dev, socket dev... are all treated as unknown type
+            [newFile setObject:[NSNumber numberWithInt:-1] forKey:@"type"];
+        }
+        // symbolic link information (if the file is a symbolic link)
         NSString* link = [file objectForKey:(id)kCFFTPResourceLink];
         NSData* linkData = [link dataUsingEncoding:NSMacOSRomanStringEncoding];
         link = [[NSString alloc] initWithData:linkData encoding:NSUTF8StringEncoding];
         [newFile setObject:link forKey:@"link"];
-		// file size
+        // file size
         NSNumber* size = [file objectForKey:(id)kCFFTPResourceSize];
         [newFile setObject:size forKey:@"size"];
         // FIXME: Convert to json will fail as Date format, so don't add it.
         [newFilesInfo addObject:newFile];
     }
-    NSLog(@"requestsManager:didCompleteListingRequest:listing: \n%@", listing);
+    //NSLog(@"requestsManager:didCompleteListingRequest:listing: \n%@", listing);
     NSLog(@"requestsManager:didCompleteListingRequest:newFilesInfo: \n%@", newFilesInfo);
     // Return all files info, not just name list.
     self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:newFilesInfo];
@@ -268,16 +268,16 @@
 
 - (void)requestsManager:(id<GRRequestsManagerProtocol>)requestsManager didCompleteCreateDirectoryRequest:(id<GRRequestProtocol>)request
 {
-    NSLog(@"requestsManager:didCompleteCreateDirectoryRequest:");
-    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    NSLog(@"requestsManager:didCompleteCreateDirectoryRequest: Create directory OK");
+    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Create directory OK"];
     [self.pluginResult setKeepCallbackAsBool:NO];
     [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
 }
 
 - (void)requestsManager:(id<GRRequestsManagerProtocol>)requestsManager didCompleteDeleteRequest:(id<GRRequestProtocol>)request
 {
-    NSLog(@"requestsManager:didCompleteDeleteRequest:");
-    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    NSLog(@"requestsManager:didCompleteDeleteRequest: Delete file/directory OK");
+    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Delete file/directory OK"];
     [self.pluginResult setKeepCallbackAsBool:NO];
     [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
 }
@@ -285,23 +285,25 @@
 - (void)requestsManager:(id<GRRequestsManagerProtocol>)requestsManager didCompletePercent:(float)percent forRequest:(id<GRRequestProtocol>)request
 {
     NSLog(@"requestsManager:didCompletePercent:forRequest: %f", percent);
-    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:percent];
-    [self.pluginResult setKeepCallbackAsBool:YES];
-    [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
+    if (percent >= 0 && percent < 1) {
+        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:percent];
+        [self.pluginResult setKeepCallbackAsBool:YES];
+        [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
+    }
 }
 
 - (void)requestsManager:(id<GRRequestsManagerProtocol>)requestsManager didCompleteUploadRequest:(id<GRDataExchangeRequestProtocol>)request
 {
-    NSLog(@"requestsManager:didCompleteUploadRequest:");
-    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    NSLog(@"requestsManager:didCompleteUploadRequest: Upload OK");
+    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:1];
     [self.pluginResult setKeepCallbackAsBool:NO];
     [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
 }
 
 - (void)requestsManager:(id<GRRequestsManagerProtocol>)requestsManager didCompleteDownloadRequest:(id<GRDataExchangeRequestProtocol>)request
 {
-    NSLog(@"requestsManager:didCompleteDownloadRequest:");
-    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    NSLog(@"requestsManager:didCompleteDownloadRequest: Download OK");
+    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:1];
     [self.pluginResult setKeepCallbackAsBool:NO];
     [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
 }
@@ -309,7 +311,11 @@
 - (void)requestsManager:(id<GRRequestsManagerProtocol>)requestsManager didFailWritingFileAtPath:(NSString *)path forRequest:(id<GRDataExchangeRequestProtocol>)request error:(NSError *)error
 {
     NSLog(@"requestsManager:didFailWritingFileAtPath:forRequest:error: \n %@", error);
-    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+    NSString* errorMsg = nil;
+    if ([error userInfo] == nil || (errorMsg = [[error userInfo] valueForKey:@"message"]) == nil) {
+        errorMsg = [error localizedDescription];
+    }
+    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorMsg];
     [self.pluginResult setKeepCallbackAsBool:NO];
     [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
 }
@@ -317,7 +323,11 @@
 - (void)requestsManager:(id<GRRequestsManagerProtocol>)requestsManager didFailRequest:(id<GRRequestProtocol>)request withError:(NSError *)error
 {
     NSLog(@"requestsManager:didFailRequest:withError: \n %@", error);
-    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+    NSString* errorMsg = nil;
+    if ([error userInfo] == nil || (errorMsg = [[error userInfo] valueForKey:@"message"]) == nil) {
+        errorMsg = [error localizedDescription];
+    }
+    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorMsg];
     [self.pluginResult setKeepCallbackAsBool:NO];
     [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
 }
