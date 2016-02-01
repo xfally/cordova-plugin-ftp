@@ -30,7 +30,7 @@
     <repo>https://github.com/xfally/cordova-plugin-device.git</repo>
 
     <js-module src="www/ftp.js" name="ftp">
-        <clobbers target="ftp" />
+        <clobbers target="cordova.plugin.ftp" />
     </js-module>
 
     <!-- android -->

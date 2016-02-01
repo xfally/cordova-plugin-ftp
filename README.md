@@ -27,17 +27,21 @@ $ cordova prepare
 
 ## Usage
 
+You can access this plugin by js object `window.cordova.plugin.ftp`.
+
+**DEMO**
+
 ```js
 // test code (for angularjs)
-// Tip: Usually init/create $window.ftp will take some time, so set a timeout() to make sure it's ready.
+// Tip: Usually init/create $window.cordova.plugin.ftp will take some time, so set a timeout() to make sure it's ready.
 $timeout(function() {
-	if ($window.ftp) {
+	if ($window.cordova.plugin.ftp) {
 		$log.log("xtest: ftp: found");
 		// 1. connect to one ftp server, then you can do any actions/cmds
-		$window.ftp.connect("192.168.1.1", "anonymous", "anonymous@", function() {
+		$window.cordova.plugin.ftp.connect("192.168.1.1", "anonymous", "anonymous@", function() {
 			$log.log("xtest: ftp: connect ok");
 			// 2. list one dir, note that just can be dir, not file
-			$window.ftp.ls("/sdcard", function(fileList) {
+			$window.cordova.plugin.ftp.ls("/sdcard", function(fileList) {
 				$log.log("xtest: ftp: list ok");
 				if (fileList && fileList.length > 0) {
 					$log.log("xtest: ftp: The last file'name is " + fileList[fileList.length - 1].name);
@@ -45,16 +49,16 @@ $timeout(function() {
 					$log.log("xtest: ftp: The last file'link is " + fileList[fileList.length - 1].link);
 					$log.log("xtest: ftp: The last file'size is " + fileList[fileList.length - 1].size);
 					// 3. create one dir on ftp server
-					$window.ftp.mkdir("/sdcard/mkdir", function(ok) {
+					$window.cordova.plugin.ftp.mkdir("/sdcard/mkdir", function(ok) {
 						$log.log("xtest: ftp: mkdir ok=" + ok);
 						// 4. upload local file to remote, you can rename at the same time. arg1: local file, arg2: remote file.
 						// make sure you can access and read the local file.
-						$window.ftp.upload("/default.prop", "/sdcard/mkdir/default.prop", function(percent) {
+						$window.cordova.plugin.ftp.upload("/default.prop", "/sdcard/mkdir/default.prop", function(percent) {
 							if (percent == 1) {
 								$log.log("xtest: ftp: upload finish");
 								// cancel download after some time
 								//$timeout(function() {
-									//$window.ftp.cancel(function(ok) {
+									//$window.cordova.plugin.ftp.cancel(function(ok) {
 										//$log.log("xtest: ftp: cancel ok=" + ok);
 									//}, function(error) {
 										//$log.log("xtest: ftp: cancel error=" + error);
@@ -62,14 +66,14 @@ $timeout(function() {
 								//}, 2000);
 								// 5. download remote file to local, you can rename at the same time. arg1: local file, arg2: remote file.
 								// make sure you can access and write the local dir.
-								$window.ftp.download("/mnt/sdcard/download.mp4", "/sdcard/视频/mp4-10MB-720P.mp4", function(percent) {
+								$window.cordova.plugin.ftp.download("/mnt/sdcard/download.mp4", "/sdcard/视频/mp4-10MB-720P.mp4", function(percent) {
 									if (percent == 1) {
 										$log.log("xtest: ftp: download finish");
 										// 6. delete one file on ftp server
-										$window.ftp.rm("/sdcard/mkdir/default.prop", function(ok) {
+										$window.cordova.plugin.ftp.rm("/sdcard/mkdir/default.prop", function(ok) {
 											$log.log("xtest: ftp: rm ok=" + ok);
 											// 7. delete one dir on ftp server, note that just can be empty dir, or will fail
-											$window.ftp.rmdir("/sdcard/mkdir", function(ok) {
+											$window.cordova.plugin.ftp.rmdir("/sdcard/mkdir", function(ok) {
 												$log.log("xtest: ftp: rmdir ok=" + ok);
 											}, function(error) {
 												$log.log("xtest: ftp: rmdir error=" + error);
