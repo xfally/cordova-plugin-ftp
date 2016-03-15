@@ -48,6 +48,7 @@ $timeout(function() {
 					$log.log("xtest: ftp: The last file'type is " + fileList[fileList.length - 1].type);
 					$log.log("xtest: ftp: The last file'link is " + fileList[fileList.length - 1].link);
 					$log.log("xtest: ftp: The last file'size is " + fileList[fileList.length - 1].size);
+					$log.log("xtest: ftp: The last file'modifiedDate is " + fileList[fileList.length - 1].modifiedDate);
 					// 3. create one dir on ftp server
 					$window.cordova.plugin.ftp.mkdir("/sdcard/mkdir", function(ok) {
 						$log.log("xtest: ftp: mkdir ok=" + ok);

@@ -28,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import android.util.Log;
 
@@ -175,7 +177,9 @@ public class CDVFtp extends CordovaPlugin {
 					Number type = file.getType();
 					String link = file.getLink();
 					Number size = file.getSize();
-					String jsonStr = "{" + "name:\"" + name + "\",type:" + type + ",link:\"" + link + "\",size:" + size + "}";
+					Date modifiedDate = file.getModifiedDate();
+					String modifiedDateString = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz")).format(modifiedDate);
+					String jsonStr = "{" + "name:\"" + name + "\",type:" + type + ",link:\"" + link + "\",size:" + size + ",modifiedDate:\"" + modifiedDateString + "\"}";
 					JSONObject jsonObj = new JSONObject(jsonStr);
 					fileList.put(jsonObj);
 				}
