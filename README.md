@@ -114,6 +114,10 @@ Refer to [ftp.js](https://github.com/xfally/cordova-plugin-ftp/blob/master/www/f
 
 For iOS, `ftp.connect` will always success (even if `username` and `password` are incorrect), but it does NOT mean the later actions, e.g. `ls`... `download` will success too! So check their `errorCallback` carefully.
 
+## TODO
+
+Implement `ftp.disconnect` or `ftp.reconnect` later, to fix "too much connect from this client...".
+
 ## Thanks
 
 - The iOS native implementing is based on [GoldRaccoon](https://github.com/albertodebortoli/GoldRaccoon).
