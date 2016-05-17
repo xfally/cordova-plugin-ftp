@@ -19,11 +19,9 @@ You can do the following:
 ## Installation
 
 ```sh
-$ cordova plugin add https://github.com/xfally/cordova-plugin-ftp
+$ cordova plugin add cordova-plugin-ftp
 $ cordova prepare
 ```
-
-> It has not been added to npm registry yet.
 
 Dependency:
 
