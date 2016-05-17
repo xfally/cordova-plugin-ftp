@@ -27,7 +27,7 @@
     <description>Cordova Ftp Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,ftp</keywords>
-    <repo>https://github.com/xfally/cordova-plugin-device.git</repo>
+    <repo>https://github.com/xfally/cordova-plugin-ftp.git</repo>
 
     <js-module src="www/ftp.js" name="ftp">
         <clobbers target="cordova.plugin.ftp" />
@@ -79,6 +79,8 @@
         <source-file src="src/ios/GoldRaccoon/Sources/Utils/GRQueue.m" />
         <header-file src="src/ios/GoldRaccoon/Sources/Utils/GRStreamInfo.h" />
         <source-file src="src/ios/GoldRaccoon/Sources/Utils/GRStreamInfo.m" />
+
+        <framework src="CFNetwork.framework" />
     </platform>
 
 </plugin>

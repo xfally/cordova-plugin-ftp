@@ -25,6 +25,11 @@ $ cordova prepare
 
 > It has not been added to npm registry yet.
 
+Dependency:
+
+- For iOS, the plugin depends on *CFNetwork.framework*, which has been added to plugin.xml (and `cordova prepare` will add it to platfrom project), so you don't need to do anything.
+- But for Android, it depends on *com.android.support:support-v4:23.2.0*, which should be added to your platfrom project (e.g. in Android Studio) by hand.
+
 ## Usage
 
 You can access this plugin by js object `window.cordova.plugin.ftp`.
@@ -32,8 +37,10 @@ You can access this plugin by js object `window.cordova.plugin.ftp`.
 **DEMO**
 
 ```js
-// test code (for angularjs)
-// Tip: Usually init/create $window.cordova.plugin.ftp will take some time, so set a timeout() to make sure it's ready.
+// Test code (for angularjs)
+// Tip: Usually init/create $window.cordova.plugin.ftp will take some time, so set a `timeout()` to make sure it's ready.
+//      But surely, the best and safest way is to listen `deviceready` event for cordova, or `$ionicPlatform.ready()` for ionic.
+//      You can find more info in official docs of cordova or ionic.
 $timeout(function() {
 	if ($window.cordova.plugin.ftp) {
 		$log.log("xtest: ftp: found");
