@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-ftp",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "This cordova plugin is created to use ftp (client) in web/js.",
   "cordova": {
     "id": "cordova-plugin-ftp",
