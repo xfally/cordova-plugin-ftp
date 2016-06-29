@@ -28,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -260,11 +262,14 @@ public class CDVFtp extends CordovaPlugin {
 		{
 			try {
 				String remoteFilePath = remoteFile.substring(0, remoteFile.lastIndexOf('/') + 1);
-				//String remoteFileName = remoteFile.substring(remoteFile.lastIndexOf('/') + 1);
+				String remoteFileName = remoteFile.substring(remoteFile.lastIndexOf('/') + 1);
+				String localFilePath = localFile.substring(0, localFile.lastIndexOf('/') + 1);
+				String localFileName = localFile.substring(localFile.lastIndexOf('/') + 1);
 				this.client.changeDirectory(remoteFilePath);
 				File file = new File(localFile);
-				long size = file.length();
-				client.upload(file, new CDVFtpTransferListener(size, callbackContext));
+				InputStream in =  new FileInputStream(file);
+				long size = file.length();				
+				client.upload(remoteFileName, in, 0, 0, new CDVFtpTransferListener(size, callbackContext));
 				// refer to CDVFtpTransferListener for transfer percent and completed
 			} catch (Exception e) {
 				callbackContext.error(e.toString());
