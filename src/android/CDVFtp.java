@@ -268,7 +268,7 @@ public class CDVFtp extends CordovaPlugin {
 				this.client.changeDirectory(remoteFilePath);
 				File file = new File(localFile);
 				InputStream in =  new FileInputStream(file);
-				long size = file.length();				
+				long size = file.length();
 				client.upload(remoteFileName, in, 0, 0, new CDVFtpTransferListener(size, callbackContext));
 				// refer to CDVFtpTransferListener for transfer percent and completed
 			} catch (Exception e) {
