@@ -61,7 +61,7 @@
                                                                   password:self.password];
         self.requestsManager.delegate = self;
 
-        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Init connect and login ok. (iOS always success)"];
+        self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Init connect and login OK. (iOS always succeed)"];
     }
 
     [self.pluginResult setKeepCallbackAsBool:NO];
@@ -199,7 +199,19 @@
 
     [self.requestsManager stopAndCancelAllRequests];
 
-    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Cancel request OK"];
+    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Cancel OK."];
+    [self.pluginResult setKeepCallbackAsBool:NO];
+    [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
+}
+
+- (void)disconnect:(CDVInvokedUrlCommand*)cmd
+{
+    self.cmd = cmd;
+
+    // Reuse cancel action
+    [self.requestsManager stopAndCancelAllRequests];
+
+    self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Disconnect OK."];
     [self.pluginResult setKeepCallbackAsBool:NO];
     [self.commandDelegate sendPluginResult:self.pluginResult callbackId:self.cmd.callbackId];
 }

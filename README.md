@@ -38,11 +38,7 @@ You can access this plugin by js object `window.cordova.plugin.ftp`.
 ## Notice
 
 1. For iOS, `ftp.connect` will always succeed (even if `username` and `password` are incorrect), but it does NOT mean the later actions, e.g. `ls`... `download` will succeed too! So check their `errorCallback` carefully.
-2. Want to upload/download multiple files? The plugin just inits one connection and transmit all files via that connection. If you use asychronous syntax (e.g. `foreach`) to start multiple upload/download in a short time, it will mess the transfer. Instead, you can try [$q](https://docs.angularjs.org/api/ng/service/$q) or [async](https://github.com/caolan/async) to transmit one after one.
-
-## TODO
-
-Implement `ftp.disconnect` or `ftp.reconnect` later, to fix "too much connect from this client...".
+2. Want to upload/download multiple files? The plugin just inits one connection and transmit all files via that connection. If you use asychronous syntax (e.g. `foreach`) to start multiple upload/download in a short time, it may mess the transfer. Instead, you can try [$q](https://docs.angularjs.org/api/ng/service/$q) or [async](https://github.com/caolan/async) to transmit one after one.
 
 ## Thanks
 

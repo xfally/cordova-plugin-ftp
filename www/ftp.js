@@ -173,4 +173,18 @@ Ftp.prototype.cancel = function(successCallback, errorCallback) {
          []);
 };
 
+/**
+ * Disconnect from ftp server.
+ *
+ * @param {function} successCallback The success callback. If triggered, means `disconnect` success.
+ * @param {function} errorCallback The error callback. If triggered, means disconnect fail.
+ */
+Ftp.prototype.disconnect = function(successCallback, errorCallback) {
+    exec(successCallback,
+         errorCallback,
+         "Ftp",
+         "disconnect",
+         []);
+};
+
 module.exports = new Ftp();

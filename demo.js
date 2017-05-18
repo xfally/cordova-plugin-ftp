@@ -85,6 +85,14 @@ $scope.action = {
 												// 7. Delete one dir on ftp server, fail if it's not an empty dir
 												$window.cordova.plugin.ftp.rmdir(remotePath, function(ok) {
 													$log.info("xtest: ftp: rmdir ok=" + ok);
+
+													// 8. Disconnect from ftp server explicitly
+													$window.cordova.plugin.ftp.disconnect(function(ok) {
+														$log.info("xtest: ftp: disconnect ok=" + ok);
+													}, function(error) {
+														$log.error("xtest: ftp: disconnect error=" + error);
+													});
+
 												}, function(error) {
 													$log.error("xtest: ftp: rmdir error=" + error);
 												});

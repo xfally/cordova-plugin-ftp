@@ -126,6 +126,16 @@ public class CDVFtp extends CordovaPlugin {
 					}
 				}
 			});
+		} else if (action.equals("disconnect")) {
+			cordova.getThreadPool().execute(new Runnable() {
+				public void run() {
+					try {
+						disconnect(callbackContext);
+					} catch (Exception e) {
+						callbackContext.error(e.toString());
+					}
+				}
+			});
 		} else {
 			// This action/cmd is not found/supported
 			return false;
@@ -151,7 +161,7 @@ public class CDVFtp extends CordovaPlugin {
 				this.client = new FTPClient();
 				this.client.connect(hostname);
 				this.client.login(username, password);
-				callbackContext.success("Connect and login ok.");
+				callbackContext.success("Connect and login OK.");
 			} catch (Exception e) {
 				callbackContext.error(e.toString());
 			}
@@ -310,8 +320,21 @@ public class CDVFtp extends CordovaPlugin {
 
 	private void cancelAllRequests(CallbackContext callbackContext) {
 		try {
+			// `true` to perform a legal abort procedure (an ABOR command is sent to the server),
+			// `false` to abruptly close the transfer without advice.
 			this.client.abortCurrentDataTransfer(true);
-			callbackContext.success("Cancel request OK");
+			callbackContext.success("Cancel OK.");
+		} catch (Exception e) {
+			callbackContext.error(e.toString());
+		}
+	}
+
+	private void disconnect(CallbackContext callbackContext) {
+		try {
+			// `true` to perform a legal disconnect procedure (an QUIT command is sent to the server),
+			// `false` to break the connection without advice.
+			this.client.disconnect(true);
+			callbackContext.success("Disconnect OK.");
 		} catch (Exception e) {
 			callbackContext.error(e.toString());
 		}
