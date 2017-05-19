@@ -31,6 +31,10 @@ Dependency:
 ## Usage
 ### Ionic 2 & TypeScript
 #### Requirements:
+* @angular/core *(included by default on ionic2)*
+* lodash *(included by default on ionic2)*
+* rxjs/Observable *(included by default on ionic2)*
+* rxjs/Subscriber *(included by default on ionic2)*
 
 You can access this plugin by typescript class `Ftp`.
 #### Example
