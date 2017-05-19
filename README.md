@@ -29,9 +29,41 @@ Dependency:
 - But for Android, it depends on *com.android.support:support-v4:23.2.0*, which should be added to your platfrom project (e.g. in Android Studio) by hand.
 
 ## Usage
+### Ionic 2 & TypeScript
+#### Requirements:
 
+You can access this plugin by typescript class `Ftp`.
+#### Example
+```typescript
+contructor (private ftp: Ftp) {
+    this.ftp.connect('hostname.com', 'username', 'password').then(() => {
+        this.ftp.upload('file.zip', '/var/www/file.zip').then(() => {
+            this.ftp.download('file.zip', '/var/www/file.zip').then(() => {
+                this.ftp.remove('/var/www/file.zip').then(() => {
+                    // :D
+                })
+            })
+        })
+    });
+}
+```
+### Cordova & Phonegap
 You can access this plugin by js object `window.cordova.plugin.ftp`.
 
+#### Example
+```javascript
+window.cordova.plugin.ftp.connect('hostname.com', 'username', 'password', function () {
+    window.cordova.plugin.ftp.upload('file.zip', '/var/www/file.zip', function (progress) {
+        if (progress === 1) {
+            window.cordova.plugin.ftp.download('file.zip', '/var/www/file.zip', function() {
+                window.cordova.plugin.ftp.rm('/var/www/file.zip', function() {
+                    // :D
+                })
+            })
+        }
+    })
+})
+```
 - Refer to [demo.js](./demo.js) for usage demo.
 - Refer to [ftp.js](./www/ftp.js) for all js APIs.
 
