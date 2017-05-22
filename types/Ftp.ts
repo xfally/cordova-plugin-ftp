@@ -218,7 +218,7 @@ export class Ftp
      *      })
      *  }
      * */
-    public static remove (remote:string, recursive?:boolean):Promise<any>
+    public static rm (remote:string):Promise<any>
     {
         return new Promise((resolve, reject) => {
             cordova.plugin.ftp.rm(remote, (success:any) => resolve(success), (err:any) => reject(err))
@@ -228,7 +228,17 @@ export class Ftp
      * @param {string} remote - Remote path
      * @return {Promise<any>}
      * */
-    public static list(remote:string):Promise<any>
+    public static rmdir (remote:string):Promise<any>
+    {
+        return new Promise((resolve, reject) => {
+            cordova.plugin.ftp.rmdir(remote, (success:any) => resolve(success), (err:any) => reject(err))
+        });
+    }
+    /**
+     * @param {string} remote - Remote path
+     * @return {Promise<any>}
+     * */
+    public static ls(remote:string):Promise<any>
     {
         return new Promise((resolve, reject) => {
             cordova.plugin.ftp.ls(remote, (success:any) => resolve(success), (err:any) => reject(err));
@@ -238,7 +248,7 @@ export class Ftp
      * @param {string} remote - Remote path
      * @return {Promise<any>}
      * */
-    public static makeDirectory(remote:string):Promise<any>
+    public static mkdir(remote:string):Promise<any>
     {
         return new Promise((resolve, reject) => {
             cordova.plugin.ftp.mkdir(remote, (success:any) => resolve(success), (err:any) => reject(err));
@@ -247,10 +257,19 @@ export class Ftp
     /**
      * @return {Promise<any>}
      * */
-    public static cancelAllRequests():Promise<any>
+    public static cancel():Promise<any>
     {
         return new Promise((resolve, reject) => {
             cordova.plugin.ftp.cancel((success:any) => resolve(success), (err:any) => reject(err))
+        });
+    }
+    /**
+     * @return {Promise<any>}
+     * */
+    public static disconnect():Promise<any>
+    {
+        return new Promise((resolve, reject) => {
+            cordova.plugin.ftp.disconnect((success:any) => resolve(success), (err:any) => reject(err))
         });
     }
 }

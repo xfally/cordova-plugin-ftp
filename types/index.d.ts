@@ -64,6 +64,12 @@ export interface Ftp {
      * @return {void}
      * */
     cancel(successCallback?:Function, errorCallback?:Function):never;
+    /**
+     * @param {function} successCallback
+     * @param {function} errorCallback
+     * @return {void}
+     * */
+    disconnect(successCallback?:Function, errorCallback?:Function):never;
 }
 /**
  *
