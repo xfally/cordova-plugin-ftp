@@ -29,9 +29,102 @@ Dependency:
 - But for Android, it depends on *com.android.support:support-v4:23.2.0*, which should be added to your platfrom project (e.g. in Android Studio) by hand.
 
 ## Usage
+### Ionic 2 & TypeScript
+#### Requirements:
+* @angular/core *(included by default on ionic2)*
+* lodash *(included by default on ionic2)*
+* rxjs/Observable *(included by default on ionic2)*
+* rxjs/Subscriber *(included by default on ionic2)*
 
+You can access this plugin by typescript class `Ftp`.
+#### Instalation
+##### Using ionic-cli v3
+```
+ionic cordova plugin add https://github.com/olaferlandsen/cordova-plugin-ftp.git
+```
+##### Using ionic-cli v2
+```
+ionic plugin add https://github.com/olaferlandsen/cordova-plugin-ftp.git
+```
+##### Using ionic-cli v1, phonegap-cli or cordova-cli
+```
+cordova plugin add https://github.com/olaferlandsen/cordova-plugin-ftp.git
+```
+#### Import
+##### from `providers/`, `pages/` or `app/`
+```typescript
+import '../../plugins/cordova-plugin-ftp/types/ftp';
+```
+
+#### Example (example on pages/home.ts)
+```typescript
+import '../../plugins/cordova-plugin-ftp/types/ftp';
+@Component({
+    selector    : 'page-home',
+    templateUrl : 'home.html'
+})
+export class HomePage
+{
+    /**
+     *
+     */
+    constructor (public navCtrl: NavController, public ftp: Ftp)
+    {
+    }
+    /**
+     *
+     */
+    ionViewDidLoad() {
+        this.ftp.isAvailible().then(() => {
+            this.ftp.connect('127.0.0.1', 'root', 'password').then(() => {
+                this.ftp.upload('file.zip', '/var/www/file.zip').then(() => {
+                    this.ftp.download('file.zip', '/var/www/file.zip').then(() => {
+                        this.ftp.rm('/var/www/file.zip').then(() => {
+                            this.ftp.disconnect();
+                        })
+                    })
+                })
+            });
+        }, () => {
+            // ups... FTP plugin is not available...
+        })
+    }
+}
+```
+#### API
+* static *isAvailible* ():Promise<any>
+* static *basename* (path:`string`, suffix?:`string`):`string`
+* static *dirname* (path:`string`):`string`
+* static *connect* (hostname:`string`, username:`string`, password:`string`):Promise<any>
+* static *upload* (local:`string`, remote:`string`):Promise<any>
+* static *uploadWithProgress* (local:`string`, remote:`string`):Observable<any>
+* static *download* (local:`string`, remote:`string`):Promise<any>
+* static *downloadWithProgress*  (local:`string`, remote:`string`):Observable<any>
+* static *rm* (remote:`string`):Promise<any>
+* static *rmdir* (remote:`string`):Promise<any>
+* static *ls* (remote:`string`):Promise<any>
+* static *mkdir* (remote:`string`):Promise<any>``
+* static *cancel* ():Promise<any>
+* static *disconnect* ():Promise<any>
+
+
+### Cordova & Phonegap
 You can access this plugin by js object `window.cordova.plugin.ftp`.
 
+#### Example
+```javascript
+window.cordova.plugin.ftp.connect('hostname.com', 'username', 'password', function () {
+    window.cordova.plugin.ftp.upload('file.zip', '/var/www/file.zip', function (progress) {
+        if (progress === 1) {
+            window.cordova.plugin.ftp.download('file.zip', '/var/www/file.zip', function() {
+                window.cordova.plugin.ftp.rm('/var/www/file.zip', function() {
+                    // :D
+                })
+            })
+        }
+    })
+})
+```
 - Refer to [demo.js](./demo.js) for usage demo.
 - Refer to [ftp.js](./www/ftp.js) for all js APIs.
 
