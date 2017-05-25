@@ -37,20 +37,77 @@ Dependency:
 * rxjs/Subscriber *(included by default on ionic2)*
 
 You can access this plugin by typescript class `Ftp`.
-#### Example
+#### Instalation
+##### Using ionic-cli v3
+```
+ionic cordova plugin add https://github.com/olaferlandsen/cordova-plugin-ftp.git
+```
+##### Using ionic-cli v2
+```
+ionic plugin add https://github.com/olaferlandsen/cordova-plugin-ftp.git
+```
+##### Using ionic-cli v1, phonegap-cli or cordova-cli
+```
+cordova plugin add https://github.com/olaferlandsen/cordova-plugin-ftp.git
+```
+#### Import
+##### from `providers/`, `pages/` or `app/`
 ```typescript
-contructor (private ftp: Ftp) {
-    this.ftp.connect('hostname.com', 'username', 'password').then(() => {
-        this.ftp.upload('file.zip', '/var/www/file.zip').then(() => {
-            this.ftp.download('file.zip', '/var/www/file.zip').then(() => {
-                this.ftp.remove('/var/www/file.zip').then(() => {
-                    // :D
+import '../../plugins/cordova-plugin-ftp/types/ftp';
+```
+
+#### Example (example on pages/home.ts)
+```typescript
+import '../../plugins/cordova-plugin-ftp/types/ftp';
+@Component({
+    selector    : 'page-home',
+    templateUrl : 'home.html'
+})
+export class HomePage
+{
+    /**
+     *
+     */
+    constructor (public navCtrl: NavController, public ftp: Ftp)
+    {
+    }
+    /**
+     *
+     */
+    ionViewDidLoad() {
+        this.ftp.isAvailible().then(() => {
+            this.ftp.connect('127.0.0.1', 'root', 'password').then(() => {
+                this.ftp.upload('file.zip', '/var/www/file.zip').then(() => {
+                    this.ftp.download('file.zip', '/var/www/file.zip').then(() => {
+                        this.ftp.rm('/var/www/file.zip').then(() => {
+                            this.ftp.disconnect();
+                        })
+                    })
                 })
-            })
+            });
+        }, () => {
+            // ups... FTP plugin is not available...
         })
-    });
+    }
 }
 ```
+#### API
+* static *isAvailible* ():Promise<any>
+* static *basename* (path:`string`, suffix?:`string`):`string`
+* static *dirname* (path:`string`):`string`
+* static *connect* (hostname:`string`, username:`string`, password:`string`):Promise<any>
+* static *upload* (local:`string`, remote:`string`):Promise<any>
+* static *uploadWithProgress* (local:`string`, remote:`string`):Observable<any>
+* static *download* (local:`string`, remote:`string`):Promise<any>
+* static *downloadWithProgress*  (local:`string`, remote:`string`):Observable<any>
+* static *rm* (remote:`string`):Promise<any>
+* static *rmdir* (remote:`string`):Promise<any>
+* static *ls* (remote:`string`):Promise<any>
+* static *mkdir* (remote:`string`):Promise<any>``
+* static *cancel* ():Promise<any>
+* static *disconnect* ():Promise<any>
+
+
 ### Cordova & Phonegap
 You can access this plugin by js object `window.cordova.plugin.ftp`.
 

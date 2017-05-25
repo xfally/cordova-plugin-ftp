@@ -5,6 +5,86 @@ import {Injectable} from "@angular/core";
 import * as _ from 'lodash';
 import {Observable} from "rxjs/Observable";
 import {Subscriber} from "rxjs/Subscriber";
+
+/**
+ * @interface
+ * */
+export interface FtpInterface {
+    /**
+     * @param {string} hostname
+     * @param {string} username
+     * @param {string} password
+     * @param {function} successCallback
+     * @param {function} errorCallback
+     * @return {void}
+     * */
+    connect (hostname:string, username:string, password:string, successCallback?:Function, errorCallback?:Function):never;
+    /**
+     * @param {string} path
+     * @param {function} successCallback
+     * @param {function} errorCallback
+     * @return {void}
+     * */
+    ls(path:string, successCallback?:Function, errorCallback?:Function):never;
+    /**
+     * @param {string} path
+     * @param {function} successCallback
+     * @param {function} errorCallback
+     * @return {void}
+     * */
+    mkdir(path:string, successCallback?:Function, errorCallback?:Function):never;
+    /**
+     * @param {string} file
+     * @param {function} successCallback
+     * @param {function} errorCallback
+     * @return {void}
+     * */
+    rm(file:string, successCallback?:Function, errorCallback?:Function):never;
+    /**
+     * @param {string} file
+     * @param {function} successCallback
+     * @param {function} errorCallback
+     * @return {void}
+     * */
+    rmdir(file:string, successCallback?:Function, errorCallback?:Function):never;
+    /**
+     * @param {string} localFile
+     * @param {string} remoteFile
+     * @param {function} successCallback
+     * @param {function} errorCallback
+     * @return {void}
+     * */
+    upload(localFile:string, remoteFile:string, successCallback?:Function, errorCallback?:Function):never;
+    /**
+     * @param {string} localFile
+     * @param {string} remoteFile
+     * @param {function} successCallback
+     * @param {function} errorCallback
+     * @return {void}
+     * */
+    download(localFile:string, remoteFile:string, successCallback?:Function, errorCallback?:Function):never;
+    /**
+     * @param {function} successCallback
+     * @param {function} errorCallback
+     * @return {void}
+     * */
+    cancel(successCallback?:Function, errorCallback?:Function):never;
+    /**
+     * @param {function} successCallback
+     * @param {function} errorCallback
+     * @return {void}
+     * */
+    disconnect(successCallback?:Function, errorCallback?:Function):never;
+}
+/**
+ *
+ * */
+export declare var cordova : {
+    plugin: {
+        ftp : FtpInterface
+    }
+};
+
 /**
  * @constructor
  * */
@@ -85,8 +165,7 @@ export class Ftp
      *
      * @param {string} local - Local path
      * @param {string} remote - Remote path
-     * @param {boolean} observable - If you set it as true, this method return a Observable object
-     * @return {Promise<any>|Observable<any>}
+     * @return {Promise<any>}
      * @example
      * ```
      *  constructor (private ftp:Ftp) {
@@ -98,7 +177,21 @@ export class Ftp
      *          })
      *      })
      *  }
+     * */
+    public static upload (local:string, remote:string):Promise<any>
+    {
+        return new Promise((resolve, reject) => {
+            cordova.plugin.ftp.upload(local, remote, (percentage:any) => {
+                if (percentage == 1) resolve();
+            }, (err:any) => reject(err))
+        })
+    }
+    /**
+     * Upload file from local to remote server
      *
+     * @param {string} local - Local path
+     * @param {string} remote - Remote path
+     * @return {Observable<any>}
      *  @example
      * ```
      *  constructor (private ftp:Ftp) {
@@ -117,30 +210,22 @@ export class Ftp
      *      })
      *  }
      * */
-    public static upload (local:string, remote:string, observable?:boolean):Promise<any>|Observable<any>
+    public static uploadWithProgress (local:string, remote:string):Observable<any>
     {
-        if (observable === true) {
-            return new Observable((observer:Subscriber<any>) => {
-                cordova.plugin.ftp.upload(local, remote, (percentage:any) => {
-                    if (percentage == 1) {
-                        observer.next(percentage);
-                        observer.complete();
-                    }
-                    else observer.next(percentage);
-                }, (err:any) => observer.error(err))
-            });
-        }
-        return new Promise((resolve, reject) => {
+        return new Observable((observer:Subscriber<any>) => {
             cordova.plugin.ftp.upload(local, remote, (percentage:any) => {
-                if (percentage == 1) resolve();
-            }, (err:any) => reject(err))
-        })
+                if (percentage == 1) {
+                    observer.next(percentage);
+                    observer.complete();
+                }
+                else observer.next(percentage);
+            }, (err:any) => observer.error(err))
+        });
     }
     /**
      * @param {string} local - Local path
      * @param {string} remote - Remote path
-     * @param {boolean} observable - If you set it as true, this method return a Observable object
-     * @return {Promise<any>|Observable<any>}
+     * @return {Promise<any>}
      *
      * @example
      * ```
@@ -153,7 +238,19 @@ export class Ftp
      *          })
      *      })
      *  }
-     *
+     * */
+    public static download (local:string, remote:string):Promise<any>
+    {
+        return new Promise((resolve, reject) => {
+            cordova.plugin.ftp.download(local, remote, (percentage:any) => {
+                if (percentage == 1) resolve();
+            } , (err:any) => reject(err))
+        })
+    }
+    /**
+     * @param {string} local - Local path
+     * @param {string} remote - Remote path
+     * @return {Observable<any>}
      *  @example
      * ```
      *  constructor (private ftp:Ftp) {
@@ -172,24 +269,17 @@ export class Ftp
      *      })
      *  }
      * */
-    public static download (local:string, remote:string, observable?:boolean):Promise<any>|Observable<any>
+    public static downloadWithProgress (local:string, remote:string):Observable<any>
     {
-        if (observable === true) {
-            return new Observable((observer:Subscriber<any>) => {
-                cordova.plugin.ftp.download(local, remote, (percentage:any) => {
-                    if (percentage == 1) {
-                        observer.next(percentage);
-                        observer.complete();
-                    }
-                    else observer.next(percentage);
-                }, (err:any) => observer.error(err))
-            });
-        }
-        return new Promise((resolve, reject) => {
+        return new Observable((observer:Subscriber<any>) => {
             cordova.plugin.ftp.download(local, remote, (percentage:any) => {
-                if (percentage == 1) resolve();
-            } , (err:any) => reject(err))
-        })
+                if (percentage == 1) {
+                    observer.next(percentage);
+                    observer.complete();
+                }
+                else observer.next(percentage);
+            }, (err:any) => observer.error(err))
+        });
     }
     /**
      * @param {string} remote - Remote path
