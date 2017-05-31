@@ -44,12 +44,12 @@ function onDeviceReady() {
         // You can do any ftp actions from now on...
         window.cordova.plugin.ftp.upload('/localPath/localFile', '/remotePath/remoteFile', function(percent) {
             if (percent == 1) {
-                log.info("ftp: upload finish");
+                console.info("ftp: upload finish");
             } else {
-                log.debug("ftp: upload percent=" + percent * 100 + "%");
+                console.debug("ftp: upload percent=" + percent * 100 + "%");
             }
         }, function(error) {
-            log.error("ftp: upload error=" + error);
+            console.error("ftp: upload error=" + error);
         });
 
     }, function(error) {
