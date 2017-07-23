@@ -14,14 +14,14 @@
 /**
  Instances of this class manage a queue of requests against an FTP server.
  The different request types are:
- 
+
   * list directory
   * create directory
   * delete directory
   * delete file
   * upload file
   * download file
- 
+
  As soon as the requests are submitted to the GRRequestsManager, they are queued in a FIFO queue.
  The FTP Manager must be started with the startProcessingRequests method and can be shut down with the stopAndCancelAllRequests method.
  When processed, the requests are executed one at a time (max concurrency = 1).
@@ -42,5 +42,15 @@
  @return A GRRequestsManager object.
  */
 - (instancetype)initWithHostname:(NSString *)hostname user:(NSString *)username password:(NSString *)password;
+
+/**
+ @brief Initialize a GRRequestsManager object with given hostname, port, username and password.
+ @param hostname The hostname of the FTP service to connect to.
+ @param port The port of the FTP service to connect to.
+ @param username The username to use for connecting to the FTP service.
+ @param password The password to use for connecting to the FTP service.
+ @return A GRRequestsManager object.
+ */
+- (instancetype)initWithHostname:(NSString *)hostname port:(NSNumber *)port user:(NSString *)username password:(NSString *)password;
 
 @end

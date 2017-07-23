@@ -45,7 +45,7 @@ function Ftp() {}
  *
  * Just need to init the connection once. If success, you can do any ftp actions later.
  *
- * @param {string} hostname The ftp server address. The address without protocol prefix, e.g. "192.168.1.1", "ftp.xfally.github.io".
+ * @param {string} hostname The ftp server address. The address without protocol prefix, e.g. "192.168.1.1:21", "ftp.xfally.github.io" (default port 21 will be used if not set).
  * @param {string} username The ftp login username. If both `username` and `password` are empty, the default username "anonymous" will be used.
  * @param {string} password The ftp login password. If both `username` and `password` are empty, the default password "anonymous@" will be used.
  * @param {function} successCallback The success callback.
