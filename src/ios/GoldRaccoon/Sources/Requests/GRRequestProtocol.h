@@ -62,6 +62,7 @@
 
 @required
 - (NSString *)hostnameForRequest:(id<GRRequestProtocol>)request;
+- (NSString *)portForRequest:(id<GRRequestProtocol>)request;
 - (NSString *)usernameForRequest:(id<GRRequestProtocol>)request;
 - (NSString *)passwordForRequest:(id<GRRequestProtocol>)request;
 

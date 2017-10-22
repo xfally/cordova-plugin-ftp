@@ -56,9 +56,19 @@
             self.password = @"anonymous@";
         }
 
-        self.requestsManager = [[GRRequestsManager alloc] initWithHostname:self.hostname
-                                                                      user:self.username
-                                                                  password:self.password];
+        NSArray* address = [self.hostname componentsSeparatedByString:NSLocalizedString(@":", nil)];
+        if ([address count] == 2) {
+            NSString* host = [address objectAtIndex:0];
+            NSNumber* port = [NSNumber numberWithInt:[[address objectAtIndex:1] intValue]];
+            self.requestsManager = [[GRRequestsManager alloc] initWithHostname:host
+                                                                          port:port
+                                                                          user:self.username
+                                                                      password:self.password];
+        } else {
+            self.requestsManager = [[GRRequestsManager alloc] initWithHostname:self.hostname
+                                                                          user:self.username
+                                                                      password:self.password];
+        }
         self.requestsManager.delegate = self;
 
         self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Init connect and login OK. (iOS always succeed)"];

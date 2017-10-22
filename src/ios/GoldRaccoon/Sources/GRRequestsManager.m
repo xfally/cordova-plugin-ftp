@@ -38,6 +38,7 @@
 @implementation GRRequestsManager
 
 @synthesize hostname = _hostname;
+@synthesize port = _port;
 @synthesize delegate = _delegate;
 
 #pragma mark - Dealloc and Initialization
@@ -51,11 +52,29 @@
 - (instancetype)initWithHostname:(NSString *)hostname user:(NSString *)username password:(NSString *)password
 {
     NSAssert([hostname length], @"hostname must not be nil");
-    
+
     self = [super init];
     if (self) {
         _hostname = hostname;
         _username = username;
+        _port = [NSNumber numberWithInt:21];
+        _password = password;
+        _requestQueue = [[GRQueue alloc] init];
+        _isRunning = NO;
+        _delegateRespondsToPercentProgress = NO;
+    }
+    return self;
+}
+
+- (instancetype)initWithHostname:(NSString *)hostname port:(NSNumber *)port user:(NSString *)username password:(NSString *)password
+{
+    NSAssert([hostname length], @"hostname must not be nil");
+
+    self = [super init];
+    if (self) {
+        _hostname = hostname;
+        _username = username;
+        _port = port;
         _password = password;
         _requestQueue = [[GRQueue alloc] init];
         _isRunning = NO;
@@ -156,7 +175,7 @@
                                    listing:listing];
         }
     }
-    
+
     // create directory request
     if ([request isKindOfClass:[GRCreateDirectoryRequest class]]) {
         if ([self.delegate respondsToSelector:@selector(requestsManager:didCompleteCreateDirectoryRequest:)]) {
@@ -178,14 +197,14 @@
         }
         _currentUploadData = nil;
     }
-    
+
     // download request
     else if ([request isKindOfClass:[GRDownloadRequest class]]) {
         NSError *writeError = nil;
         BOOL writeToFileSucceeded = [_currentDownloadData writeToFile:((GRDownloadRequest *)request).localFilePath
                                                               options:NSDataWritingAtomic
                                                                 error:&writeError];
-        
+
         if (writeToFileSucceeded && !writeError) {
             if ([self.delegate respondsToSelector:@selector(requestsManager:didCompleteDownloadRequest:)]) {
                 [self.delegate requestsManager:self didCompleteDownloadRequest:(GRDownloadRequest *)request];
@@ -201,7 +220,7 @@
         }
         _currentDownloadData = nil;
     }
-    
+
     [self _processNextRequest];
 }
 
@@ -211,7 +230,7 @@
         NSError *error = [NSError errorWithDomain:@"com.albertodebortoli.goldraccoon" code:-1000 userInfo:@{@"message": request.error.message}];
         [self.delegate requestsManager:self didFailRequest:request withError:error];
     }
-    
+
     [self _processNextRequest];
 }
 
@@ -242,6 +261,11 @@
     return self.hostname;
 }
 
+- (NSString *)portForRequest:(id<GRRequestProtocol>)request
+{
+    return self.port;
+}
+
 - (NSString *)usernameForRequest:(id<GRRequestProtocol>)request
 {
     return self.username;
@@ -270,7 +294,7 @@
 {
     id<GRRequestProtocol> request = [[clazz alloc] initWithDelegate:self datasource:self];
     request.path = filePath;
-    
+
     [self _enqueueRequest:request];
     return request;
 }
@@ -280,7 +304,7 @@
     id<GRDataExchangeRequestProtocol> request = [[clazz alloc] initWithDelegate:self datasource:self];
     request.path = remotePath;
     request.localFilePath = localPath;
-    
+
     [self _enqueueRequest:request];
     return request;
 }
@@ -293,17 +317,17 @@
 - (void)_processNextRequest
 {
     self.currentRequest = [self.requestQueue dequeue];
-    
+
     if (self.currentRequest == nil) {
         [self stopAndCancelAllRequests];
-        
+
         if ([self.delegate respondsToSelector:@selector(requestsManagerDidCompleteQueue:)]) {
             [self.delegate requestsManagerDidCompleteQueue:self];
         }
-        
+
         return;
     }
-    
+
     if ([self.currentRequest isKindOfClass:[GRDownloadRequest class]]) {
         _currentDownloadData = [NSMutableData dataWithCapacity:4096];
     }
@@ -311,11 +335,11 @@
         NSString *localFilepath = ((GRUploadRequest *)self.currentRequest).localFilePath;
         _currentUploadData = [NSData dataWithContentsOfFile:localFilepath];
     }
-    
+
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.currentRequest start];
     });
-    
+
     if ([self.delegate respondsToSelector:@selector(requestsManager:didScheduleRequest:)]) {
         [self.delegate requestsManager:self didScheduleRequest:self.currentRequest];
     }
