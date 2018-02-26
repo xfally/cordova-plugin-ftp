@@ -103,7 +103,12 @@
  */
 @property (nonatomic, copy) NSString *hostname;
 
-/** 
+/**
+ The port of the FTP service.
+ */
+@property (nonatomic, copy) NSString *port;
+
+/**
  @brief Add a request to the manager for listing a directory at a given path.
  @param path The path of the directory to list.
  @return The created request, conforming to GRRequestProtocol.

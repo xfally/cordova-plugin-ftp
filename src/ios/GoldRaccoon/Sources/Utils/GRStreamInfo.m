@@ -49,9 +49,10 @@
 
     // a little bit of C because I was not able to make NSInputStream play nice
     CFReadStreamRef readStreamRef = CFReadStreamCreateWithFTPURL(NULL, ( __bridge CFURLRef) request.fullURL);
-    CFReadStreamSetProperty(readStreamRef,
-                            socketRemotePortNumber,
-                            (__bridge CFNumberRef) [request.dataSource portForRequest:request]);
+    // FIXME: property port is not supported!
+    //CFReadStreamSetProperty(readStreamRef,
+                            //socketRemotePortNumber,
+                            //(__bridge CFNumberRef) [request.dataSource portForRequest:request]);
     CFReadStreamSetProperty(readStreamRef,
                             kCFStreamPropertyFTPAttemptPersistentConnection,
                             kCFBooleanFalse);
@@ -97,9 +98,10 @@
     }
 
     CFWriteStreamRef writeStreamRef = CFWriteStreamCreateWithFTPURL(NULL, ( __bridge CFURLRef) request.fullURL);
-    CFWriteStreamSetProperty(writeStreamRef,
-                            socketRemotePortNumber,
-                            (__bridge CFNumberRef) [request.dataSource portForRequest:request]);
+    // FIXME: property port is not supported!
+    //CFWriteStreamSetProperty(writeStreamRef,
+                            //socketRemotePortNumber,
+                            //(__bridge CFNumberRef) [request.dataSource portForRequest:request]);
     CFWriteStreamSetProperty(writeStreamRef,
                              kCFStreamPropertyFTPAttemptPersistentConnection,
                              kCFBooleanFalse);
