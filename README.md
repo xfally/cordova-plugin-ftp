@@ -67,6 +67,13 @@ Please refer to [ftp.js](./www/ftp.js) for all available APIs and usages.
 1. For iOS, `ftp.connect` will always succeed (even if `username` and `password` are incorrect), but it does NOT mean the later actions, e.g. `ls`... `download` will succeed too! So always check their `errorCallback`.
 2. Want to upload/download multiple files? The plugin (Android part) inits just one connection and transmits all files via it. If you use asychronous syntax (e.g. `foreach`) to start multiple upload/download in a short time, it may mess the transfer. Instead, you can try [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) or [async](https://github.com/caolan/async) to transmit one after one.
 
+## Testing
+
+This plugin has been tested with Cordova 4.0+ in
+
+- Android 4.4+ (built by Android Studio 2.3.1).
+- iOS 7.0+ (built by Xcode 9.0).
+
 ## Thanks
 
 - The iOS native implementing is based on [GoldRaccoon](https://github.com/albertodebortoli/GoldRaccoon).
