@@ -51,6 +51,15 @@ public class CDVFtp extends CordovaPlugin {
     @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) {
         switch (action) {
+            case "setSecurity":
+                cordova.getThreadPool().execute(() -> {
+                    try {
+                        setSecurity(args.getString(0), callbackContext);
+                    } catch (Exception e) {
+                        callbackContext.error(e.toString());
+                    }
+                });
+                break;
             case "connect":
                 cordova.getThreadPool().execute(() -> {
                     try {
@@ -138,6 +147,34 @@ public class CDVFtp extends CordovaPlugin {
         }
         // This action/cmd is found/supported
         return true;
+    }
+
+    private void setSecurity(String ftpsType, CallbackContext callbackContext) {
+        if (ftpsType == null || ftpsType.length() == 0) {
+            callbackContext.error("Expected one non-empty arg ftpsType.");
+        } else {
+            ftpsType = ftpsType.toUpperCase();
+            int securityType = 0;
+            switch (ftpsType) {
+                case "FTP":
+                    securityType = 0;
+                    break;
+                case "FTPS":
+                    securityType = 1;
+                    break;
+                case "FTPES":
+                    securityType = 2;
+                    break;
+                default:
+                    break;
+            }
+            try {
+                this.client.setSecurity(securityType);
+                callbackContext.success("Set ftp security type OK");
+            } catch (Exception e) {
+                callbackContext.error(e.toString());
+            }
+        }
     }
 
     private void connect(String address, String username, String password, CallbackContext callbackContext) {
