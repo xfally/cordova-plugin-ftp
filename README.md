@@ -38,8 +38,7 @@ Example:
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
-    // First of all, connect to ftp server address without protocol prefix. e.g. "192.168.1.1:21", "ftp.xfally.github.io"
-    // Notice: address port is only supported for Android, if not given, default port 21 will be used.
+    // First of all, connect to ftp server address without protocol prefix. e.g. "192.168.1.1:21", "ftp.xfally.github.io" (default port 21 will be used if not set).
     window.cordova.plugin.ftp.connect('ftp.xfally.github.io', 'username', 'password', function(ok) {
         console.info("ftp: connect ok=" + ok);
 

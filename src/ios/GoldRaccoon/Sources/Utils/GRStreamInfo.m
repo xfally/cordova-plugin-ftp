@@ -49,14 +49,9 @@
 
     // a little bit of C because I was not able to make NSInputStream play nice
     CFReadStreamRef readStreamRef = CFReadStreamCreateWithFTPURL(NULL, ( __bridge CFURLRef) request.fullURL);
-    // FIXME: property port is not supported!
-    //CFReadStreamSetProperty(readStreamRef,
-                            //socketRemotePortNumber,
-                            //(__bridge CFNumberRef) [request.dataSource portForRequest:request]);
     CFReadStreamSetProperty(readStreamRef,
                             kCFStreamPropertyFTPAttemptPersistentConnection,
                             kCFBooleanFalse);
-
     CFReadStreamSetProperty(readStreamRef, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanTrue);
 	CFReadStreamSetProperty(readStreamRef, kCFStreamPropertyFTPUsePassiveMode, request.passiveMode ? kCFBooleanTrue :kCFBooleanFalse);
     CFReadStreamSetProperty(readStreamRef, kCFStreamPropertyFTPFetchResourceInfo, kCFBooleanTrue);
@@ -98,14 +93,9 @@
     }
 
     CFWriteStreamRef writeStreamRef = CFWriteStreamCreateWithFTPURL(NULL, ( __bridge CFURLRef) request.fullURL);
-    // FIXME: property port is not supported!
-    //CFWriteStreamSetProperty(writeStreamRef,
-                            //socketRemotePortNumber,
-                            //(__bridge CFNumberRef) [request.dataSource portForRequest:request]);
     CFWriteStreamSetProperty(writeStreamRef,
                              kCFStreamPropertyFTPAttemptPersistentConnection,
                              kCFBooleanFalse);
-
     CFWriteStreamSetProperty(writeStreamRef, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanTrue);
 	CFWriteStreamSetProperty(writeStreamRef, kCFStreamPropertyFTPUsePassiveMode, request.passiveMode ? kCFBooleanTrue :kCFBooleanFalse);
     CFWriteStreamSetProperty(writeStreamRef, kCFStreamPropertyFTPFetchResourceInfo, kCFBooleanTrue);
