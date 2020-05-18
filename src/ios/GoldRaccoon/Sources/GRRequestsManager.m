@@ -19,6 +19,8 @@
 
 @interface GRRequestsManager () <GRRequestDelegate, GRRequestDataSource>
 
+@property (nonatomic, readwrite, copy) NSString *hostname;
+@property (nonatomic, copy) NSNumber *port;
 @property (nonatomic, copy) NSString *username;
 @property (nonatomic, copy) NSString *password;
 @property (nonatomic, strong) NSMutableData *currentDownloadData;
@@ -37,8 +39,6 @@
 
 @implementation GRRequestsManager
 
-@synthesize hostname = _hostname;
-@synthesize port = _port;
 @synthesize delegate = _delegate;
 
 #pragma mark - Dealloc and Initialization
