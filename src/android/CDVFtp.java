@@ -40,12 +40,15 @@ import it.sauronsoftware.ftp4j.FTPDataTransferListener;
 import it.sauronsoftware.ftp4j.FTPFile;
 
 public class CDVFtp extends CordovaPlugin {
+    private static final String NO_ARG_LOCALPATH = "No arg localPath.";
+    private static final String NO_ARG_REMOTEPATH = "No arg remotePath.";
     public static final String TAG = CDVFtp.class.getSimpleName();
     private String rootPath = "/";
     private FTPClient client = null;
 
     @Override
-    public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+    public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext)
+            throws JSONException {
         if (action.equals("connect")) {
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
@@ -144,28 +147,24 @@ public class CDVFtp extends CordovaPlugin {
         return true;
     }
 
-    private void connect(String hostname, String username, String password, CallbackContext callbackContext) {
-        if (hostname == null || hostname.length() <= 0)
-        {
-            callbackContext.error("Expected hostname.");
-        }
-        else
-        {
-            if (username == null && password == null)
-            {
+    private void connect(String address, String username, String password, CallbackContext callbackContext) {
+        if (address == null || address.length() <= 0) {
+            callbackContext.error("No arg hostname.");
+        } else {
+            if (username == null && password == null) {
                 username = "anonymous";
                 password = "anonymous@";
             }
 
             try {
                 this.client = new FTPClient();
-                String[] address = hostname.split(":");
-                if (address.length == 2) {
-                    String host = address[0];
-                    int port = Integer.parseInt(address[1]);
+                String[] addressSplit = address.split(":");
+                if (addressSplit.length == 2) {
+                    String host = addressSplit[0];
+                    int port = Integer.parseInt(addressSplit[1]);
                     this.client.connect(host, port);
                 } else {
-                    this.client.connect(hostname);
+                    this.client.connect(address);
                 }
                 this.client.login(username, password);
                 callbackContext.success("Connect and login OK.");
@@ -175,30 +174,27 @@ public class CDVFtp extends CordovaPlugin {
         }
     }
 
-    private void list(String path, CallbackContext callbackContext) {
-        if (path == null)
-        {
-            callbackContext.error("Expected path.");
-        }
-        else
-        {
-            if (!path.endsWith("/"))
-            {
-                path = path.concat("/");
+    private void list(String remotePath, CallbackContext callbackContext) {
+        if (remotePath == null) {
+            callbackContext.error(NO_ARG_REMOTEPATH);
+        } else {
+            if (!remotePath.endsWith("/")) {
+                remotePath = remotePath.concat("/");
             }
 
             try {
-                this.client.changeDirectory(path);
+                this.client.changeDirectory(remotePath);
                 FTPFile[] list = client.list();
                 JSONArray fileList = new JSONArray();
-                for (FTPFile file:list) {
+                for (FTPFile file : list) {
                     String name = file.getName();
                     Number type = file.getType();
                     String link = file.getLink();
                     Number size = file.getSize();
                     Date modifiedDate = file.getModifiedDate();
                     String modifiedDateString = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz")).format(modifiedDate);
-                    String jsonStr = "{" + "name:\"" + name + "\",type:" + type + ",link:\"" + link + "\",size:" + size + ",modifiedDate:\"" + modifiedDateString + "\"}";
+                    String jsonStr = "{" + "name:\"" + name + "\",type:" + type + ",link:\"" + link + "\",size:" + size
+                            + ",modifiedDate:\"" + modifiedDateString + "\"}";
                     JSONObject jsonObj = new JSONObject(jsonStr);
                     fileList.put(jsonObj);
                 }
@@ -209,21 +205,17 @@ public class CDVFtp extends CordovaPlugin {
         }
     }
 
-    private void createDirectory(String path, CallbackContext callbackContext) {
-        if (path == null)
-        {
-            callbackContext.error("Expected path.");
-        }
-        else
-        {
-            if (!path.endsWith("/"))
-            {
-                path = path.concat("/");
+    private void createDirectory(String remotePath, CallbackContext callbackContext) {
+        if (remotePath == null) {
+            callbackContext.error(NO_ARG_REMOTEPATH);
+        } else {
+            if (!remotePath.endsWith("/")) {
+                remotePath = remotePath.concat("/");
             }
 
             try {
                 this.client.changeDirectory(this.rootPath);
-                this.client.createDirectory(path);
+                this.client.createDirectory(remotePath);
                 callbackContext.success("Create directory OK");
             } catch (Exception e) {
                 callbackContext.error(e.toString());
@@ -231,21 +223,17 @@ public class CDVFtp extends CordovaPlugin {
         }
     }
 
-    private void deleteDirectory(String path, CallbackContext callbackContext) {
-        if (path == null)
-        {
-            callbackContext.error("Expected path.");
-        }
-        else
-        {
-            if (!path.endsWith("/"))
-            {
-                path = path.concat("/");
+    private void deleteDirectory(String remotePath, CallbackContext callbackContext) {
+        if (remotePath == null) {
+            callbackContext.error(NO_ARG_REMOTEPATH);
+        } else {
+            if (!remotePath.endsWith("/")) {
+                remotePath = remotePath.concat("/");
             }
 
             try {
                 this.client.changeDirectory(this.rootPath);
-                this.client.deleteDirectory(path);
+                this.client.deleteDirectory(remotePath);
                 callbackContext.success("Delete directory OK");
             } catch (Exception e) {
                 callbackContext.error(e.toString());
@@ -253,16 +241,13 @@ public class CDVFtp extends CordovaPlugin {
         }
     }
 
-    private void deleteFile(String file, CallbackContext callbackContext) {
-        if (file == null)
-        {
-            callbackContext.error("Expected file.");
-        }
-        else
-        {
+    private void deleteFile(String remotePath, CallbackContext callbackContext) {
+        if (remotePath == null) {
+            callbackContext.error(NO_ARG_REMOTEPATH);
+        } else {
             try {
                 this.client.changeDirectory(this.rootPath);
-                this.client.deleteFile(file);
+                this.client.deleteFile(remotePath);
                 callbackContext.success("Delete file OK");
             } catch (Exception e) {
                 callbackContext.error(e.toString());
@@ -270,21 +255,20 @@ public class CDVFtp extends CordovaPlugin {
         }
     }
 
-    private void uploadFile(String localFile, String remoteFile, CallbackContext callbackContext) {
-        if (localFile == null || remoteFile == null)
-        {
-            callbackContext.error("Expected localFile and remoteFile.");
-        }
-        else
-        {
+    private void uploadFile(String localPath, String remotePath, CallbackContext callbackContext) {
+        if (localPath == null) {
+            callbackContext.error(NO_ARG_LOCALPATH);
+        } else if (remotePath == null) {
+            callbackContext.error(NO_ARG_REMOTEPATH);
+        } else {
             try {
-                String remoteFilePath = remoteFile.substring(0, remoteFile.lastIndexOf('/') + 1);
-                String remoteFileName = remoteFile.substring(remoteFile.lastIndexOf('/') + 1);
-                String localFilePath = localFile.substring(0, localFile.lastIndexOf('/') + 1);
-                String localFileName = localFile.substring(localFile.lastIndexOf('/') + 1);
-                this.client.changeDirectory(remoteFilePath);
-                File file = new File(localFile);
-                InputStream in =  new FileInputStream(file);
+                String remoteParentPath = remotePath.substring(0, remotePath.lastIndexOf('/') + 1);
+                String remoteFileName = remotePath.substring(remotePath.lastIndexOf('/') + 1);
+                String localParentPath = localPath.substring(0, localPath.lastIndexOf('/') + 1);
+                String localFileName = localPath.substring(localPath.lastIndexOf('/') + 1);
+                this.client.changeDirectory(remoteParentPath);
+                File file = new File(localPath);
+                InputStream in = new FileInputStream(file);
                 long size = file.length();
                 client.upload(remoteFileName, in, 0, 0, new CDVFtpTransferListener(size, callbackContext));
                 // refer to CDVFtpTransferListener for transfer percent and completed
@@ -294,26 +278,25 @@ public class CDVFtp extends CordovaPlugin {
         }
     }
 
-    private void downloadFile(String localFile, String remoteFile, CallbackContext callbackContext) {
-        if (localFile == null || remoteFile == null)
-        {
-            callbackContext.error("Expected localFile and remoteFile.");
-        }
-        else
-        {
+    private void downloadFile(String localPath, String remotePath, CallbackContext callbackContext) {
+        if (localPath == null) {
+            callbackContext.error(NO_ARG_LOCALPATH);
+        } else if (remotePath == null) {
+            callbackContext.error(NO_ARG_REMOTEPATH);
+        } else {
             try {
-                String remoteFilePath = remoteFile.substring(0, remoteFile.lastIndexOf('/') + 1);
-                String remoteFileName = remoteFile.substring(remoteFile.lastIndexOf('/') + 1);
-                this.client.changeDirectory(remoteFilePath);
+                String remoteParentPath = remotePath.substring(0, remotePath.lastIndexOf('/') + 1);
+                String remoteFileName = remotePath.substring(remotePath.lastIndexOf('/') + 1);
+                this.client.changeDirectory(remoteParentPath);
                 FTPFile[] list = client.list();
-                JSONArray fileList = new JSONArray();
-                for (FTPFile file:list) {
+                for (FTPFile file : list) {
                     String name = file.getName();
-                    //Number type = file.getType();
-                    //String link = file.getLink();
+                    // Number type = file.getType();
+                    // String link = file.getLink();
                     Number size = file.getSize();
                     if (remoteFileName.equals(name)) {
-                        client.download(remoteFileName, new File(localFile), new CDVFtpTransferListener(size.longValue(), callbackContext));
+                        client.download(remoteFileName, new File(localPath),
+                                new CDVFtpTransferListener(size.longValue(), callbackContext));
                         // refer to CDVFtpTransferListener for transfer percent and completed
                         return;
                     }
@@ -327,7 +310,8 @@ public class CDVFtp extends CordovaPlugin {
 
     private void cancelAllRequests(CallbackContext callbackContext) {
         try {
-            // `true` to perform a legal abort procedure (an ABOR command is sent to the server),
+            // `true` to perform a legal abort procedure (an ABOR command is sent to the
+            // server),
             // `false` to abruptly close the transfer without advice.
             this.client.abortCurrentDataTransfer(true);
             callbackContext.success("Cancel OK.");
@@ -338,7 +322,8 @@ public class CDVFtp extends CordovaPlugin {
 
     private void disconnect(CallbackContext callbackContext) {
         try {
-            // `true` to perform a legal disconnect procedure (an QUIT command is sent to the server),
+            // `true` to perform a legal disconnect procedure (an QUIT command is sent to
+            // the server),
             // `false` to break the connection without advice.
             this.client.disconnect(true);
             callbackContext.success("Disconnect OK.");
@@ -370,9 +355,10 @@ class CDVFtpTransferListener implements FTPDataTransferListener {
         // Yet other length bytes has been transferred since the last time this
         // method was called
         this.curSize += length;
-        float percent = (float)this.curSize / (float)this.totalSize;
+        float percent = (float) this.curSize / (float) this.totalSize;
         Log.d(TAG, "Transferred, totalSize=" + this.totalSize + ", curSize=" + this.curSize + ", percent=" + percent);
-        // Tip: just return if percent < 1, to prevent js:successCallback() invoked twice, as completed() will also return 1.
+        // Tip: just return if percent < 1, to prevent js:successCallback() invoked
+        // twice, as completed() will also return 1.
         if (percent >= 0 && percent < 1) {
             this.pluginResult = new PluginResult(PluginResult.Status.OK, percent);
             this.pluginResult.setKeepCallback(true);

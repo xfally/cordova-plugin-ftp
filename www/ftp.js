@@ -45,13 +45,13 @@ function Ftp() {}
  *
  * Just need to init the connection once. If success, you can do any ftp actions later.
  *
- * @param {string} hostname The ftp server address. The address without protocol prefix, e.g. "192.168.1.1:21", "ftp.xfally.github.io"
- *                          Notice: address port is only supported for Android, if not given, default port 21 will be used.
+ * @param {string} address The ftp server address. The address without protocol prefix (e.g. "192.168.1.1:21", "ftp.xfally.github.io").
+ *                         Notice: address port is only supported for Android, if not given, default port 21 will be used.
  * @param {string} username The ftp login username. If both `username` and `password` are empty, the default username "anonymous" will be used.
  * @param {string} password The ftp login password. If both `username` and `password` are empty, the default password "anonymous@" will be used.
  * @param {function} successCallback The success callback.
- *                                   Notice: For iOS, if triggered, means `init` success. But NOT means the later action, e.g. `ls`... `download` will success!
- * @param {function} errorCallback The error callback. If triggered, means init fail.
+ *                                   Notice: For iOS, if triggered, means `init` success, but NOT means the later action (e.g. `ls`... `download`) will success!
+ * @param {function} errorCallback The error callback. If triggered, means fail.
  */
 Ftp.prototype.connect = function(hostname, username, password, successCallback, errorCallback) {
     exec(successCallback,
@@ -61,22 +61,22 @@ Ftp.prototype.connect = function(hostname, username, password, successCallback, 
 };
 
 /**
- * List files (with info of `name`, `type`, `link`, `size`, `modifiedDate`) under one directory on the ftp server.
+ * List files (with info of `name`, `type`, `link`, `size`, `modifiedDate`) under one dir on the ftp server.
  *
  * You can get one file's name using `fileList[x].name` (`x` is the location in the array).
  *
  * Explain file property:
  * - name: The file name (utf-8).
- * - type: The file type. number `0` means regular file, `1` means directory, `2` means symbolic link, `-1` means unknown type (maybe block dev, char dev...).
+ * - type: The file type. number `0` means regular file, `1` means dir, `2` means symbolic link, `-1` means unknown type (maybe block/char dev...).
  * - link: If the file is a symbolic link, then this field stores symbolic link information (utf-8), else it's an empty string.
  * - size: The file size in bytes.
- * - modifiedDate: The modified date of this file. Format is `yyyy-MM-dd HH:mm:ss zzz`, e.g "2015-12-01 20:45:00 GMT+8".
+ * - modifiedDate: The modified date of this file. Format is `yyyy-MM-dd HH:mm:ss zzz` (e.g. "2015-12-01 20:45:00 GMT+8").
  *
- * @param {string} path The path on the ftp server. e.g. "/remotePath/".
+ * @param {string} remotePath The dir (with full path) on the ftp server (e.g. "/path/to/remoteDir/").
  * @param {function} successCallback The success callback, invoked with arg `{array} fileList`.
- * @param {function} errorCallback The error callback. If triggered, means fail.
+ * @param {function} errorCallback The error callback.
  */
-Ftp.prototype.ls = function(path, successCallback, errorCallback) {
+Ftp.prototype.ls = function(remotePath, successCallback, errorCallback) {
     exec(function(fileList) {
             if (fileList instanceof Array) {
                 successCallback(fileList);
@@ -84,92 +84,92 @@ Ftp.prototype.ls = function(path, successCallback, errorCallback) {
         },
         errorCallback,
         "Ftp",
-        "list", [removePathProtocolPrefix(path)]);
+        "list", [removePathProtocolPrefix(remotePath)]);
 };
 
 /**
- * Create one directory on the ftp server.
+ * Create one dir on the ftp server.
  *
- * @param {string} path The directory you want to create. e.g. "/remotePath/newDir/".
- * @param {function} successCallback The success callback. If triggered, means success.
- * @param {function} errorCallback The error callback. If triggered, means fail.
+ * @param {string} remotePath The dir (with full path) you want to create (e.g. "/path/to/remoteDir/").
+ * @param {function} successCallback The success callback.
+ * @param {function} errorCallback The error callback.
  */
-Ftp.prototype.mkdir = function(path, successCallback, errorCallback) {
+Ftp.prototype.mkdir = function(remotePath, successCallback, errorCallback) {
     exec(successCallback,
         errorCallback,
         "Ftp",
-        "createDirectory", [removePathProtocolPrefix(path)]);
+        "createDirectory", [removePathProtocolPrefix(remotePath)]);
 };
 
 /**
- * Delete one directory on the ftp server.
+ * Delete one dir on the ftp server.
  *
  * Notice: As many ftp server could not rm dir when it's not empty, so always recommended to `rm` all files under the dir at first before `rmdir`.
  *
- * @param {string} path The directory you want to delete. e.g. "/remotePath/newDir/".
- * @param {function} successCallback The success callback. If triggered, means success.
- * @param {function} errorCallback The error callback. If triggered, means fail.
+ * @param {string} remotePath The dir (with full path) you want to delete (e.g. "/path/to/remoteDir/").
+ * @param {function} successCallback The success callback.
+ * @param {function} errorCallback The error callback.
  */
-Ftp.prototype.rmdir = function(path, successCallback, errorCallback) {
+Ftp.prototype.rmdir = function(remotePath, successCallback, errorCallback) {
     exec(successCallback,
         errorCallback,
         "Ftp",
-        "deleteDirectory", [removePathProtocolPrefix(path)]);
+        "deleteDirectory", [removePathProtocolPrefix(remotePath)]);
 };
 
 /**
  * Delete one file on the ftp server.
  *
- * @param {string} file The file (with full path) you want to delete. e.g. "/remotePath/remoteFile".
- * @param {function} successCallback The success callback. If triggered, means success.
- * @param {function} errorCallback The error callback. If triggered, means fail.
+ * @param {string} remotePath The file (with full path) you want to delete (e.g. "/path/to/remoteFile").
+ * @param {function} successCallback The success callback.
+ * @param {function} errorCallback The error callback.
  */
-Ftp.prototype.rm = function(file, successCallback, errorCallback) {
+Ftp.prototype.rm = function(remotePath, successCallback, errorCallback) {
     exec(successCallback,
         errorCallback,
         "Ftp",
-        "deleteFile", [removePathProtocolPrefix(file)]);
+        "deleteFile", [removePathProtocolPrefix(remotePath)]);
 };
 
 /**
  * Upload one local file to the ftp server.
  *
- * @param {string} localFile The file (with full path) you want to upload. e.g. "/localPath/localFile".
- * @param {string} remoteFile The file (with full path) you want to located on the ftp server. e.g. "/remotePath/remoteFile".
- *                            You can see, "localFile" is also renamed to "remoteFile".
+ * @param {string} localPath The file (with full path) you want to upload from the local device (e.g. "/path/to/localFile").
+ * @param {string} remotePath The file (with full path) you want to create on the ftp server (e.g. "/path/to/remoteFile").
+ *                            As you see, "localFile" can be renamed to "remoteFile".
  * @param {function} successCallback The success callback. It will be triggered many times according the file's size.
- *                                   The arg `0`, `0.11..`, `0.23..` ... `1` means the upload percent. When it reach `1`, means success.
- * @param {function} errorCallback The error callback. If triggered, means fail.
+ *                                   The arg `0`, `0.11..`, `0.23..` ... `1` means the upload percent. When it reaches `1`, means finished.
+ * @param {function} errorCallback The error callback.
  */
-Ftp.prototype.upload = function(localFile, remoteFile, successCallback, errorCallback) {
+Ftp.prototype.upload = function(localPath, remotePath, successCallback, errorCallback) {
     exec(successCallback,
         errorCallback,
         "Ftp",
-        "uploadFile", [removePathProtocolPrefix(localFile), removePathProtocolPrefix(remoteFile)]);
+        "uploadFile", [removePathProtocolPrefix(localPath), removePathProtocolPrefix(remotePath)]);
 };
 
 /**
  * Download one remote file on the ftp server to local path.
  *
- * @param {string} localFile The file (with full path) you want to located on the local device. e.g. "/localPath/localFile".
- * @param {string} remoteFile The file (with full path) you want to download on the ftp server. e.g. "/remotePath/remoteFile".
- *                            You can see, "remoteFile" is also renamed to "localFile".
+ * @param {string} localPath The file (with full path) you want to create in the local device (e.g. "/path/to/localFile").
+ * @param {string} remotePath The file (with full path) you want to download from the ftp server (e.g. "/path/to/remoteFile").
+ *                            As you see, "remoteFile" can be renamed to "localFile".
  * @param {function} successCallback The success callback. It will be triggered many times according the file's size.
- *                                   The arg `0`, `0.11..`, `0.23..` ... `1` means the download percent. When it reach `1`, means success.
- * @param {function} errorCallback The error callback. If triggered, means fail.
+ *                                   The arg `0`, `0.11..`, `0.23..` ... `1` means the download percent. When it reaches `1`, means finished.
+ * @param {function} errorCallback The error callback.
  */
-Ftp.prototype.download = function(localFile, remoteFile, successCallback, errorCallback) {
+Ftp.prototype.download = function(localPath, remotePath, successCallback, errorCallback) {
     exec(successCallback,
         errorCallback,
         "Ftp",
-        "downloadFile", [removePathProtocolPrefix(localFile), removePathProtocolPrefix(remoteFile)]);
+        "downloadFile", [removePathProtocolPrefix(localPath), removePathProtocolPrefix(remotePath)]);
 };
 
 /**
  * Cancel all requests. Always success.
  *
- * @param {function} successCallback The success callback. If triggered, means `cancel` success.
- * @param {function} errorCallback The error callback. If triggered, means cancel fail.
+ * @param {function} successCallback The success callback.
+ * @param {function} errorCallback The error callback.
  */
 Ftp.prototype.cancel = function(successCallback, errorCallback) {
     exec(successCallback,
@@ -181,8 +181,8 @@ Ftp.prototype.cancel = function(successCallback, errorCallback) {
 /**
  * Disconnect from ftp server.
  *
- * @param {function} successCallback The success callback. If triggered, means `disconnect` success.
- * @param {function} errorCallback The error callback. If triggered, means disconnect fail.
+ * @param {function} successCallback The success callback.
+ * @param {function} errorCallback The error callback.
  */
 Ftp.prototype.disconnect = function(successCallback, errorCallback) {
     exec(successCallback,
