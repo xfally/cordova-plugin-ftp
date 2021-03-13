@@ -15,7 +15,9 @@
   },
   "keywords": [
     "cordova",
+    "plugin",
     "ftp",
+    "ecosystem:cordova",
     "cordova-android",
     "cordova-ios"
   ],

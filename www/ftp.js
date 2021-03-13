@@ -192,4 +192,3 @@ Ftp.prototype.disconnect = function(successCallback, errorCallback) {
 };
 
 module.exports = new Ftp();
-
