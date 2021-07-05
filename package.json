@@ -29,5 +29,13 @@
   "homepage": "https://github.com/xfally/cordova-plugin-ftp",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  }
+  },
+  "files": [
+    "README.md",
+    "LICENSE.md",
+    "package.json",
+    "plugin.xml",
+    "www",
+    "src"
+  ]
 }
