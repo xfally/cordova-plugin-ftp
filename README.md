@@ -32,49 +32,21 @@ Dependency:
 
 You can access this plugin by js object `window.cordova.plugin.ftp`.
 
-Example:
+Refer to [test](./test/www/js/index.js) for usage example.
 
-```js
-document.addEventListener("deviceready", onDeviceReady, false);
+Refer to [ftp.js](./www/ftp.js) for all available APIs and usages.
 
-function onDeviceReady() {
-    // First of all, connect to ftp server address without protocol prefix. e.g. "192.168.1.1:21", "ftp.xfally.github.io"
-    // Notice:
-    //  1. The address port is only supported for Android.
-    //  2. If the port not given explicitly, the default port 21 (or 990 if FTPS) will be used.
-    window.cordova.plugin.ftp.connect('ftp.xfally.github.io', 'username', 'password', function(ok) {
-        console.info("ftp: connect ok=" + ok);
+This plugin has been tested with:
 
-        // You can do any ftp actions from now on...
-        window.cordova.plugin.ftp.upload('/localPath/localFile', '/remotePath/remoteFile', function(percent) {
-            if (percent == 1) {
-                console.info("ftp: upload finish");
-            } else {
-                console.debug("ftp: upload percent=" + percent * 100 + "%");
-            }
-        }, function(error) {
-            console.error("ftp: upload error=" + error);
-        });
-
-    }, function(error) {
-        console.error("ftp: connect error=" + error);
-    });
-}
-```
-
-Please refer to [ftp.js](./www/ftp.js) for all available APIs and usages.
+- Cordova 10.0
+- Android 10.0 API 29 (built by Android Studio 4.1.1)
+- iOS 7.0+ (built by Xcode 9.0)
+- Ftp server: vsftpd 3.0.3
 
 ## Notice
 
 1. For iOS, `ftp.connect` will always succeed (even if `username` and `password` are incorrect), but it does NOT mean the later actions, e.g. `ls`... `download` will succeed too! So always check their `errorCallback`.
 2. Want to upload/download multiple files? The plugin (Android part) inits just one connection and transmits all files via it. If you use asychronous syntax (e.g. `foreach`) to start multiple upload/download in a short time, it may mess the transfer. Instead, you can try [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) or [async](https://github.com/caolan/async) to transmit one after one.
-
-## Testing
-
-This plugin has been tested with Cordova 4.0+ in
-
-- Android 4.4+ (built by Android Studio 2.3.1).
-- iOS 7.0+ (built by Xcode 9.0).
 
 ## Thanks
 

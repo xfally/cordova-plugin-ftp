@@ -26,4 +26,41 @@ function onDeviceReady() {
 
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
     document.getElementById('deviceready').classList.add('ready');
+
+    // TIP: Refer to `ftp.js` for more api info.
+    // Set connection security type if needed.
+    window.cordova.plugin.ftp.setSecurity("ftpes", "TLSv1", (result) => {
+        console.info("ftp: setSecurity result=" + result);
+        // Connect to ftp server address without protocol prefix.
+        window.cordova.plugin.ftp.connect('192.168.3.77', 'anonymous', 'anonymous@', (result) => {
+            console.info("ftp: connect result=" + result);
+            // Then, You can do any ftp actions from now on...
+            // Try upload...
+            window.cordova.plugin.ftp.upload('/data/data/io.github.xfally.cordova.plugin.ftp.test/test/A.txt', '/pub/A1.txt', (percent) => {
+                if (percent == 1) {
+                    console.debug("ftp: upload percent=100%");
+                    console.info("ftp: upload finish");
+                    // Try download...
+                    window.cordova.plugin.ftp.download('/data/data/io.github.xfally.cordova.plugin.ftp.test/test/C1.zip', '/pub/C.zip', (percent) => {
+                        if (percent == 1) {
+                            console.debug("ftp: download percent=100%");
+                            console.info("ftp: download finish");
+                        } else {
+                            console.debug("ftp: download percent=" + percent * 100 + "%");
+                        }
+                    }, (error) => {
+                        console.error("ftp: download error=" + error);
+                    });
+                } else {
+                    console.debug("ftp: upload percent=" + percent * 100 + "%");
+                }
+            }, (error) => {
+                console.error("ftp: upload error=" + error);
+            });
+        }, (error) => {
+            console.error("ftp: connect error=" + error);
+        });
+    }, (error) => {
+        console.error("ftp: setSecurity error=" + error);
+    });
 }
