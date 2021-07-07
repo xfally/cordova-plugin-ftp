@@ -27,40 +27,141 @@ function onDeviceReady() {
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
     document.getElementById('deviceready').classList.add('ready');
 
-    // TIP: Refer to `ftp.js` for more api info.
-    // Set connection security type if needed.
-    window.cordova.plugin.ftp.setSecurity("ftpes", "TLSv1", (result) => {
-        console.info("ftp: setSecurity result=" + result);
-        // Connect to ftp server address without protocol prefix.
-        window.cordova.plugin.ftp.connect('192.168.3.77', 'anonymous', 'anonymous@', (result) => {
+    setSecurity("ftpes", "TLSv1")
+        .then(() => connect('192.168.3.77', 'anonymous', 'anonymous@'))
+        .then(() => upload('/data/data/io.github.xfally.cordova.plugin.ftp.test/test/A.txt', '/pub/A1.txt'))
+        .then(() => download('/data/data/io.github.xfally.cordova.plugin.ftp.test/test/A2.txt', '/pub/A1.txt'))
+        .finally(() => disconnect());
+}
+
+// ES6 encapsulation example.
+// TIP: Refer to `ftp.js` for more api info.
+function setSecurity(ftpsType, protocol) {
+    return new Promise(function (resolve, reject) {
+        cordova.plugin.ftp.setSecurity(ftpsType, protocol, (result) => {
+            console.info("ftp: setSecurity result=" + result);
+            resolve(result);
+        }, (error) => {
+            console.error("ftp: setSecurity error=" + error);
+            reject(error);
+        });
+    });
+}
+
+function connect(address, username, password) {
+    return new Promise(function (resolve, reject) {
+        cordova.plugin.ftp.connect(address, username, password, (result) => {
             console.info("ftp: connect result=" + result);
-            // Then, You can do any ftp actions from now on...
-            // Try upload...
-            window.cordova.plugin.ftp.upload('/data/data/io.github.xfally.cordova.plugin.ftp.test/test/A.txt', '/pub/A1.txt', (percent) => {
-                if (percent == 1) {
-                    console.debug("ftp: upload percent=100%");
-                    console.info("ftp: upload finish");
-                    // Try download...
-                    window.cordova.plugin.ftp.download('/data/data/io.github.xfally.cordova.plugin.ftp.test/test/C1.zip', '/pub/C.zip', (percent) => {
-                        if (percent == 1) {
-                            console.debug("ftp: download percent=100%");
-                            console.info("ftp: download finish");
-                        } else {
-                            console.debug("ftp: download percent=" + percent * 100 + "%");
-                        }
-                    }, (error) => {
-                        console.error("ftp: download error=" + error);
-                    });
-                } else {
-                    console.debug("ftp: upload percent=" + percent * 100 + "%");
-                }
-            }, (error) => {
-                console.error("ftp: upload error=" + error);
-            });
+            resolve(result);
         }, (error) => {
             console.error("ftp: connect error=" + error);
+            reject(error);
         });
-    }, (error) => {
-        console.error("ftp: setSecurity error=" + error);
+    });
+}
+
+function ls(remotePath) {
+    return new Promise(function (resolve, reject) {
+        cordova.plugin.ftp.ls(remotePath, (fileList) => {
+            console.info("ftp: ls fileList=" + fileList);
+            resolve(fileList);
+        }, (error) => {
+            console.error("ftp: ls error=" + error);
+            reject(error);
+        });
+    });
+}
+
+function mkdir(remotePath) {
+    return new Promise(function (resolve, reject) {
+        cordova.plugin.ftp.mkdir(remotePath, (result) => {
+            console.info("ftp: mkdir result=" + result);
+            resolve(result);
+        }, (error) => {
+            console.error("ftp: mkdir error=" + error);
+            reject(error);
+        });
+    });
+}
+
+function rmdir(remotePath) {
+    return new Promise(function (resolve, reject) {
+        cordova.plugin.ftp.rmdir(remotePath, (result) => {
+            console.info("ftp: rmdir result=" + result);
+            resolve(result);
+        }, (error) => {
+            console.error("ftp: rmdir error=" + error);
+            reject(error);
+        });
+    });
+}
+
+function rm(remotePath) {
+    return new Promise(function (resolve, reject) {
+        cordova.plugin.ftp.rm(remotePath, (result) => {
+            console.info("ftp: rm result=" + result);
+            resolve(result);
+        }, (error) => {
+            console.error("ftp: rm error=" + error);
+            reject(error);
+        });
+    });
+}
+
+function upload(localPath, remotePath) {
+    return new Promise(function (resolve, reject) {
+        cordova.plugin.ftp.upload(localPath, remotePath, (percent) => {
+            if (percent == 1) {
+                console.debug("ftp: upload percent=100%");
+                console.info("ftp: upload finish");
+                resolve(percent);
+            } else {
+                console.debug("ftp: upload percent=" + percent * 100 + "%");
+            }
+        }, (error) => {
+            console.error("ftp: upload error=" + error);
+            reject(error);
+        });
+    });
+}
+
+function download(localPath, remotePath) {
+    return new Promise(function (resolve, reject) {
+        cordova.plugin.ftp.download(localPath, remotePath, (percent) => {
+            if (percent == 1) {
+                console.debug("ftp: download percent=100%");
+                console.info("ftp: download finish");
+                resolve(percent);
+            } else {
+                console.debug("ftp: download percent=" + percent * 100 + "%");
+            }
+        }, (error) => {
+            console.error("ftp: download error=" + error);
+            reject(error);
+        });
+    });
+}
+
+function cancel() {
+    return new Promise(function (resolve, reject) {
+        cordova.plugin.ftp.cancel((result) => {
+            console.info("ftp: cancel result=" + result);
+            resolve(result);
+        }, (error) => {
+            console.error("ftp: cancel error=" + error);
+            reject(error);
+        });
+    });
+}
+
+function disconnect() {
+    return new Promise(function (resolve, reject) {
+        cordova.plugin.ftp.disconnect((result) => {
+            console.info("ftp: disconnect result=" + result);
+            resolve(result);
+        }, (error) => {
+            console.error("ftp: disconnect error=" + error);
+            reject(error);
+        });
     });
 }
