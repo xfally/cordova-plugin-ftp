@@ -20,7 +20,9 @@
 package io.github.xfally.cordova.plugin.ftp;
 
 import android.util.Log;
+
 import it.sauronsoftware.ftp4j.*;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
@@ -32,9 +34,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /**
  * Cordova plugin ftp
@@ -69,7 +80,7 @@ public class CDVFtp extends CordovaPlugin {
         try {
             switch (action) {
                 case "setSecurity":
-                    callbackContext.success(setSecurity(args.getString(0)));
+                    callbackContext.success(setSecurity(args.getString(0), args.getString(1)));
                     break;
                 case "connect":
                     callbackContext.success(connect(args.getString(0), args.getString(1), args.getString(2)));
@@ -124,29 +135,57 @@ public class CDVFtp extends CordovaPlugin {
         return true;
     }
 
-    private String setSecurity(String ftpsType) {
-        Log.d(TAG, "setSecurity: ftpsType=" + ftpsType);
-        if (ftpsType == null || ftpsType.length() == 0) {
-            throw new CDVFtpException("Expected one non-empty arg ftpsType!");
-        }
-        ftpsType = ftpsType.toUpperCase();
-        int securityType = 0;
-        switch (ftpsType) {
-            case "FTP":
-                securityType = 0;
-                break;
-            case "FTPS":
-                securityType = 1;
-                break;
-            case "FTPES":
-                securityType = 2;
-                break;
-            default:
-                ftpsType = "NONE";
-                break;
+    private String setSecurity(String ftpsType, String protocol) {
+        Log.d(TAG, "setSecurity: ftpsType=" + ftpsType + ", protocol=" + protocol);
+        // process ftps type
+        int securityType;
+        if (ftpsType == null || ftpsType.length() == 0 || "default".equalsIgnoreCase(ftpsType)) {
+            securityType = 2;
+        } else {
+            ftpsType = ftpsType.toUpperCase();
+            switch (ftpsType) {
+                case "FTP":
+                    securityType = 0;
+                    break;
+                case "FTPS":
+                    securityType = 1;
+                    break;
+                case "FTPES":
+                    securityType = 2;
+                    break;
+                default:
+                    ftpsType = "FTPES";
+                    securityType = 2;
+                    break;
+            }
         }
         client.setSecurity(securityType);
-        Log.i(TAG, "setSecurity: Set ftp security type to: " + ftpsType);
+        // process cert and protocol
+        if (protocol == null || protocol.length() == 0 || "default".equalsIgnoreCase(protocol)) {
+            protocol = "TLS";
+        }
+        // trust every certificate given by the remote host
+        TrustManager[] trustManager = new TrustManager[] { new X509TrustManager() {
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+            }
+
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            }
+        } };
+        SSLContext sslContext = null;
+        try {
+            sslContext = SSLContext.getInstance(protocol);
+            sslContext.init(null, trustManager, new SecureRandom());
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new CDVFtpException(e.toString());
+        }
+        SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+        client.setSSLSocketFactory(sslSocketFactory);
+        Log.i(TAG, "setSecurity: Set ftp security type to: " + ftpsType + ", protocol=" + protocol);
         return OK;
     }
 
