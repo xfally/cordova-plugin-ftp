@@ -112,8 +112,7 @@ public class CDVFtp extends CordovaPlugin {
                     cordova.getThreadPool().execute(() -> {
                         Log.d(TAG, "execute: Created new thread to execute downloadFile...");
                         try {
-                            callbackContext
-                                .success(downloadFile(args.getString(0), args.getString(1), callbackContext));
+                            callbackContext.success(downloadFile(args.getString(0), args.getString(1), callbackContext));
                         } catch (Exception e) {
                             Log.e(TAG, "execute: download error=" + e.toString());
                             callbackContext.error(e.toString());
@@ -146,23 +145,21 @@ public class CDVFtp extends CordovaPlugin {
         // process ftps type
         int securityType;
         if (ftpsType == null || ftpsType.length() == 0 || "default".equalsIgnoreCase(ftpsType)) {
-            securityType = 2;
+            ftpsType = "FTPES";
+            securityType = FTPClient.SECURITY_FTPES;
         } else {
-            ftpsType = ftpsType.toUpperCase();
-            switch (ftpsType) {
+            switch (ftpsType.toUpperCase()) {
                 case "FTP":
-                    securityType = 0;
+                    securityType = FTPClient.SECURITY_FTP;
                     break;
                 case "FTPS":
-                    securityType = 1;
+                    securityType = FTPClient.SECURITY_FTPS;
                     break;
                 case "FTPES":
-                    securityType = 2;
+                    securityType = FTPClient.SECURITY_FTPES;
                     break;
                 default:
-                    ftpsType = "FTPES";
-                    securityType = 2;
-                    break;
+                    throw new CDVFtpException("Invalid security type!");
             }
         }
         client.setSecurity(securityType);

@@ -46,16 +46,18 @@ function Ftp() {
  * Set the security type for the connection.
  *
  * Notice:
- * - This method is only supported for Android.
- * - This method should be called before starting a connection.
+ * - This method is only supported for Android!
+ * - This method should be called before starting a connection!
  *
  * @param {string} ftpsType The ftp security type. Accept these values below:
- *                          - "ftp": FTP security level (the default value).
- *                          - "ftps": FTPS (FTP over implicit TLS/SSL) security level.
- *                          - "ftpes": FTPES (FTP over explicit TLS/SSL) security level.
- * @param {string} protocol The ftp protocol. Default value is "TLS" if pass arg "default" or empty string.
+ *                          - "FTP": just FTP without security.
+ *                          - "FTPS": FTP over implicit TLS/SSL.
+ *                          - "FTPES": FTP over explicit TLS/SSL.
+ *                          Default value is "FTPES" if pass arg "default" or empty string.
+ * @param {string} protocol The ftp protocol.
  *                          Accept these values: `SSL`, `SSLv2`, `SSLv3`, `TLS`, `TLSv1`, `TLSv1.1`, `TLSv1.2`.
  *                          More info: https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#SSLContext
+ *                          Default value is "TLS" if pass arg "default" or empty string.
  * @param {function} successCallback The success callback. If triggered, means success.
  * @param {function} errorCallback The error callback. If triggered, means init fail.
  */
@@ -74,7 +76,7 @@ Ftp.prototype.setSecurity = function (ftpsType, protocol, successCallback, error
  *
  * @param {string} address The ftp server address. The address without protocol prefix (e.g. "192.168.1.1:21", "ftp.xfally.github.io").
  *                         Notice:
- *                         - The address port is only supported for Android.
+ *                         - The address port is only supported for Android!
  *                         - If the port not given explicitly, the default port 21 (or 990 if FTPS) will be used.
  * @param {string} username The ftp login username. If both `username` and `password` are empty, the default username "anonymous" will be used.
  * @param {string} password The ftp login password. If both `username` and `password` are empty, the default password "anonymous@" will be used.
@@ -235,7 +237,7 @@ Ftp.prototype.disconnect = function (successCallback, errorCallback) {
  * @param {function} successCallback The success callback, invoked with arg string `TRUE` or `FALSE`.
  * @param {function} errorCallback The error callback.
  */
- Ftp.prototype.isConnected = function (successCallback, errorCallback) {
+Ftp.prototype.isConnected = function (successCallback, errorCallback) {
     console.debug("Ftp: judge isConnected...");
     exec(successCallback,
         errorCallback,
