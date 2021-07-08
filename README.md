@@ -32,7 +32,7 @@ Dependency:
 
 You can access this plugin by js object `window.cordova.plugin.ftp`.
 
-Refer to [test](./test/www/js/index.js) for usage example.
+Refer to [test](./test/) (include [ftp4es6.js](./test/www/js/ftp4es6.js) to show ES6 encapsulation) for usage example.
 
 Refer to [ftp.js](./www/ftp.js) for all available APIs and usages.
 
