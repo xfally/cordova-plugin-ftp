@@ -79,7 +79,7 @@ Ftp.prototype.setSecurity = function (ftpsType, protocol, successCallback, error
  * @param {string} username The ftp login username. If both `username` and `password` are empty, the default username "anonymous" will be used.
  * @param {string} password The ftp login password. If both `username` and `password` are empty, the default password "anonymous@" will be used.
  * @param {function} successCallback The success callback.
- *                                   Notice: For iOS, if triggered, means `init` success, but NOT means the later action (e.g. `ls`... `download`) will success!
+ *                                   Notice: For iOS, if triggered, means init success, but NOT means the later action (e.g. `ls`... `download`) will success!
  * @param {function} errorCallback The error callback. If triggered, means fail.
  */
 Ftp.prototype.connect = function (address, username, password, successCallback, errorCallback) {
@@ -227,6 +227,20 @@ Ftp.prototype.disconnect = function (successCallback, errorCallback) {
         errorCallback,
         "Ftp",
         "disconnect", []);
+}
+
+/**
+ * Is connected?
+ *
+ * @param {function} successCallback The success callback, invoked with arg string `TRUE` or `FALSE`.
+ * @param {function} errorCallback The error callback.
+ */
+ Ftp.prototype.isConnected = function (successCallback, errorCallback) {
+    console.debug("Ftp: judge isConnected...");
+    exec(successCallback,
+        errorCallback,
+        "Ftp",
+        "isConnected", []);
 }
 
 module.exports = new Ftp();

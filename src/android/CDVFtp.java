@@ -70,7 +70,7 @@ public class CDVFtp extends CordovaPlugin {
         try {
             cancelAllRequests();
         } catch (IOException | FTPIllegalReplyException e) {
-            Log.e(TAG, "onReset: fail: " + e.getMessage());
+            Log.e(TAG, "onReset: error=" + e.toString());
         }
     }
 
@@ -103,6 +103,7 @@ public class CDVFtp extends CordovaPlugin {
                         try {
                             callbackContext.success(uploadFile(args.getString(0), args.getString(1), callbackContext));
                         } catch (Exception e) {
+                            Log.e(TAG, "execute: upload error=" + e.toString());
                             callbackContext.error(e.toString());
                         }
                     });
@@ -112,8 +113,9 @@ public class CDVFtp extends CordovaPlugin {
                         Log.d(TAG, "execute: Created new thread to execute downloadFile...");
                         try {
                             callbackContext
-                                    .success(downloadFile(args.getString(0), args.getString(1), callbackContext));
+                                .success(downloadFile(args.getString(0), args.getString(1), callbackContext));
                         } catch (Exception e) {
+                            Log.e(TAG, "execute: download error=" + e.toString());
                             callbackContext.error(e.toString());
                         }
                     });
@@ -124,11 +126,15 @@ public class CDVFtp extends CordovaPlugin {
                 case "disconnect":
                     callbackContext.success(disconnect());
                     break;
+                case "isConnected":
+                    callbackContext.success(isConnected());
+                    break;
                 default:
                     Log.e(TAG, "execute: Failed to exec action/cmd: " + action + ", which is not found or supported!");
                     return false;
             }
         } catch (Exception e) {
+            Log.e(TAG, "execute: error=" + e.toString());
             callbackContext.error(e.toString());
         }
         Log.d(TAG, "execute: Succeed to exec action/cmd: " + action);
@@ -165,7 +171,7 @@ public class CDVFtp extends CordovaPlugin {
             protocol = "TLS";
         }
         // trust every certificate given by the remote host
-        TrustManager[] trustManager = new TrustManager[] { new X509TrustManager() {
+        TrustManager[] trustManager = new TrustManager[]{new X509TrustManager() {
             public X509Certificate[] getAcceptedIssuers() {
                 return null;
             }
@@ -175,7 +181,7 @@ public class CDVFtp extends CordovaPlugin {
 
             public void checkServerTrusted(X509Certificate[] certs, String authType) {
             }
-        } };
+        }};
         SSLContext sslContext = null;
         try {
             sslContext = SSLContext.getInstance(protocol);
@@ -190,9 +196,10 @@ public class CDVFtp extends CordovaPlugin {
     }
 
     private String connect(String address, String username, String password)
-            throws FTPException, IOException, FTPIllegalReplyException {
+        throws FTPException, IOException, FTPIllegalReplyException {
         Log.d(TAG, "connect: address=" + address + ", username=" + username + ", password=***");
         if (client.isConnected()) {
+            Log.i(TAG, "connect: No need to connect as already connected to address=" + address);
             return OK;
         }
         if (address == null || address.length() == 0) {
@@ -217,7 +224,7 @@ public class CDVFtp extends CordovaPlugin {
     }
 
     private JSONArray list(String remotePath) throws FTPException, IOException, FTPIllegalReplyException,
-            FTPAbortedException, FTPDataTransferException, FTPListParseException, JSONException {
+        FTPAbortedException, FTPDataTransferException, FTPListParseException, JSONException {
         Log.d(TAG, "list: remotePath=" + remotePath);
         if (remotePath == null || remotePath.length() == 0) {
             throw new CDVFtpException(ERROR_NO_ARG_REMOTEPATH);
@@ -235,9 +242,9 @@ public class CDVFtp extends CordovaPlugin {
             long size = file.getSize();
             Date modifiedDate = file.getModifiedDate();
             String modifiedDateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz", Locale.getDefault())
-                    .format(modifiedDate);
+                .format(modifiedDate);
             String jsonStr = "{" + "name:\"" + name + "\",type:" + type + ",link:\"" + link + "\",size:" + size
-                    + ",modifiedDate:\"" + modifiedDateString + "\"}";
+                + ",modifiedDate:\"" + modifiedDateString + "\"}";
             JSONObject jsonObj = new JSONObject(jsonStr);
             fileList.put(jsonObj);
         }
@@ -285,7 +292,7 @@ public class CDVFtp extends CordovaPlugin {
     }
 
     private String uploadFile(String localPath, String remotePath, CallbackContext callbackContext)
-            throws FTPException, IOException, FTPIllegalReplyException, FTPDataTransferException, FTPAbortedException {
+        throws FTPException, IOException, FTPIllegalReplyException, FTPDataTransferException, FTPAbortedException {
         Log.d(TAG, "uploadFile: localPath=" + localPath + ", remotePath=" + remotePath);
         if (localPath == null || localPath.length() == 0) {
             throw new CDVFtpException(ERROR_NO_ARG_LOCALPATH);
@@ -307,8 +314,8 @@ public class CDVFtp extends CordovaPlugin {
     }
 
     private String downloadFile(String localPath, String remotePath, CallbackContext callbackContext)
-            throws FTPException, IOException, FTPIllegalReplyException, FTPAbortedException, FTPDataTransferException,
-            FTPListParseException {
+        throws FTPException, IOException, FTPIllegalReplyException, FTPAbortedException, FTPDataTransferException,
+        FTPListParseException {
         Log.d(TAG, "downloadFile: localPath=" + localPath + ", remotePath=" + remotePath);
         if (localPath == null || localPath.length() == 0) {
             throw new CDVFtpException(ERROR_NO_ARG_LOCALPATH);
@@ -345,12 +352,22 @@ public class CDVFtp extends CordovaPlugin {
 
     private String disconnect() throws FTPException, IOException, FTPIllegalReplyException {
         Log.d(TAG, "disconnect: address=" + this.address);
-        // arg `true` to perform a legal disconnect procedure (an `QUIT` command is sent
-        // to the server),
-        // arg `false` to break the connection without advice.
-        client.disconnect(true);
-        Log.i(TAG, "disconnect: Succeed to disconnect.");
+        if (client.isConnected()) {
+            // arg `true` to perform a legal disconnect procedure (an `QUIT` command is sent
+            // to the server),
+            // arg `false` to break the connection without advice.
+            client.disconnect(true);
+            Log.i(TAG, "disconnect: Succeed to disconnect from address=" + this.address);
+        } else {
+            Log.i(TAG, "disconnect: No need to disconnect as client is not connected.");
+        }
+        this.address = null;
         return OK;
+    }
+
+    private String isConnected() {
+        Log.d(TAG, "isConnected: " + client.isConnected());
+        return String.valueOf(client.isConnected()).toUpperCase();
     }
 }
 

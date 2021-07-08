@@ -30,8 +30,10 @@ function onDeviceReady() {
     document.getElementById('deviceready').classList.add('ready');
 
     let ftp4es6 = new Ftp4es6();
+    ftp4es6.isConnected();
     ftp4es6.setSecurity("ftpes", "TLSv1")
         .then(() => ftp4es6.connect('192.168.3.77', 'anonymous', 'anonymous@'))
+        .then(() => ftp4es6.isConnected())
         .then(() => ftp4es6.upload('/data/data/io.github.xfally.cordova.plugin.ftp.test/test/A.txt', '/pub/A1.txt'))
         .then(() => ftp4es6.download('/data/data/io.github.xfally.cordova.plugin.ftp.test/test/A2.txt', '/pub/A1.txt'))
         .finally(() => ftp4es6.disconnect());

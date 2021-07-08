@@ -156,6 +156,22 @@ class Ftp4es6 {
             });
         });
     }
+
+    isConnected() {
+        return new Promise(function (resolve, reject) {
+            cordova.plugin.ftp.isConnected((result) => {
+                console.info("Ftp4es6: isConnected result=" + result);
+                if ("TRUE" == result) {
+                    resolve(true);
+                } else {
+                    reject(false);
+                }
+            }, (error) => {
+                console.error("Ftp4es6: isConnected error=" + error);
+                reject(error);
+            });
+        });
+    }
 }
 
 export default Ftp4es6;
