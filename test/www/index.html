@@ -46,6 +46,18 @@
             </div>
         </div>
         <script src="cordova.js"></script>
+        <!--
+        When you debug in iOS emulator, WKWebView maybe can not load js module because of `Origin null is not allowed by Access-Control-Allow-Origin`, then you can fix it as below.
+            In the ios platform project (in Xcode), Search the code for the following line: (might be in `CordovaLib` project's `CDVWebViewEngine.m` or other files, so do it for all of them)
+            ```
+            WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
+            ```
+            And add the following two lines after it:
+            ```
+            [configuration.preferences setValue:@TRUE forKey:@"allowFileAccessFromFileURLs"];
+            [configuration setValue:@"TRUE" forKey:@"allowUniversalAccessFromFileURLs"];
+            ```
+        -->
         <script type="module" src="js/index.js"></script>
     </body>
 </html>
