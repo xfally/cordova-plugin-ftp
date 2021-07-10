@@ -15,13 +15,15 @@
   "devDependencies": {
     "cordova-android": "^9.1.0",
     "cordova-ios": "^6.2.0",
+    "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-ftp": "file:..",
     "cordova-plugin-whitelist": "^1.3.5"
   },
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "cordova-plugin-ftp": {}
+      "cordova-plugin-ftp": {},
+      "cordova-plugin-device": {}
     },
     "platforms": [
       "android",
