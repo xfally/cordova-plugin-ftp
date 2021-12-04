@@ -43,7 +43,7 @@ This plugin has been tested with:
 - Cordova 10.0
   - cordova-android 9.1.0
   - cordova-ios 6.2.0
-- Android 10.0 API 29 (built by Android Studio 4.1.1)
+- Android 10.0 API 29, 11.0 API 30 (built by Android Studio 2020.3.1)
 - iOS 14.5 (built by Xcode 12.5)
 - Ftp server: vsftpd 3.0.3
 

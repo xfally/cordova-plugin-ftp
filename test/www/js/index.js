@@ -36,7 +36,7 @@ function onDeviceReady() {
         case "Android":
             ftp4es6.isConnected();
             ftp4es6.setSecurity("FTPES", "TLSv1")
-                .then(() => ftp4es6.connect('192.168.3.77', 'anonymous', 'anonymous@'))
+                .then(() => ftp4es6.connect('192.168.0.150', 'anonymous', 'anonymous@'))
                 .then(() => ftp4es6.isConnected())
                 .then(() => ftp4es6.download(cordova.file.dataDirectory + '/A.txt', '/pub/A1.txt'))
                 .then(() => ftp4es6.upload(cordova.file.dataDirectory + '/A.txt', '/pub/A2.txt'))
